@@ -37,22 +37,40 @@ def picture(name,posx,posy,alpha):
     bg.set_alpha(alpha)   
     screen.blit(bg,bgrect)
 
-def button(msg,x,y,w,h,ic,ac,msgz,action=None):
-    mouse = pygame.mouse.get_pos()
-    clicked = pygame.mouse.get_pressed()
+class Button(object):
+    def __init__(self,msg,x,y,w,h,ic,ac,msgz):
+        self.msg = msg
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h
+        self.ic = ic
+        self.ac = ac
+        self.msgz = msgz
     
-    if(x+w > mouse[0] > x and y+h > mouse[1] > y):
-        pygame.draw.rect(screen, ac, (x,y,w,h))  #posx,posy,dimx,dimy
+    def place(self):
+        mouse = pygame.mouse.get_pos()
+        clicked = pygame.mouse.get_pressed()
+        if(self.x+self.w > mouse[0] > self.x and self.y+self.h > mouse[1] > self.y):
+            pygame.draw.rect(screen, self.ac, (self.x,self.y,self.w,self.h))  #posx,posy,dimx,dimy
         
-        if(clicked[0] == 1 and action != None):
-            action()
-    else:
-        pygame.draw.rect(screen, ic, (x,y,w,h))
+        else:
+            pygame.draw.rect(screen, self.ic, (self.x,self.y,self.w,self.h))
         
-    btnText = pygame.font.SysFont("Quicksand Medium",msgz)
-    textSurf, textRect = text_objects(msg, btnText)
-    textRect.center = ( x+w/2, y+h/2 )
-    screen.blit(textSurf, textRect)    
+        btnText = pygame.font.SysFont("Quicksand Medium",self.msgz)
+        textSurf, textRect = text_objects(self.msg, btnText)
+        textRect.center = ( self.x+self.w/2, self.y+self.h/2 )
+        screen.blit(textSurf, textRect)
+
+    def is_clicked(self):
+        mouse = pygame.mouse.get_pos()
+        clicked = pygame.mouse.get_pressed()
+
+        if(self.x+self.w > mouse[0] > self.x and self.y+self.h > mouse[1] > self.y):
+            if(clicked[0] == 1):
+                return True
+        
+        return False
 
 def takePic():
     camera.start_preview(alpha=192)
@@ -73,8 +91,14 @@ def kiosk_menu():
         doge = picture('doge2.png',X/4+40,Y/2,128)
         title = text("Welcome to Hilbert Hostel","Quicksand",40,(X/3),60)
         insert = text("Insert ID card here","Quicksand",20,X-150,Y*3/4)
-        smileBtn = button("Smile!",X/5,Y-100,100,50,red,lightred,20,takePic)
-        cardBtn = button("Book",X-200,Y/2+50,100,50,blue,lightblue,20,book_detail)
+        smileBtn = Button("Smile!",X/5,Y-100,100,50,red,lightred,20)
+        smileBtn.place()
+        if(smileBtn.is_clicked()):
+            takePic()
+        cardBtn = Button("Book",X-200,Y/2+50,100,50,blue,lightblue,20)
+        cardBtn.place()
+        if(cardBtn.is_clicked()):
+            book_detail()
 
         pygame.display.update() 
         clock.tick(60)
@@ -93,7 +117,11 @@ def book_detail():
         title = text("Here is your booking detail","Quicksand",30,(X/4),50)
         add_on = text("Add-on","Quicksand",30,X-150,Y/3-50)
         info = text("Bluh bluh bluh bluh","Quicksand",15,X/3,Y*3/4)
-        OTPBtn = button("Request OTP",X-200,Y-80,100,50,green,lightgreen,20,enter_OTP)
+        OTPBtn = Button("Request OTP",X-200,Y-80,100,50,green,lightgreen,20)
+        OTPBtn.place()
+        if(OTPBtn.is_clicked()):
+            enter_OTP()
+            run = False
         
         pygame.display.update() 
         clock.tick(60)
@@ -112,7 +140,12 @@ def enter_OTP():
         ref = text("OTP ref no.","Quicksand",25,95,Y/3+50)
         tom = picture('tomnews.jpeg',X-150,Y/4,128)
         info = text("Bluh bluh bluh bluh","Quicksand",15,X-150,Y/2)
-        submitBtn = button("Submit",X/2-50,Y-80,100,50,green,lightgreen,20,check_in_complete)
+        submitBtn = Button("Submit",X/2-50,Y-80,100,50,green,lightgreen,20)
+        submitBtn.place()
+        if(submitBtn.is_clicked()):
+            check_in_complete()
+            run = False
+
         for i in range(6):
             pygame.draw.rect(screen,grey,(50+slide,Y/4-20,50,50))
             slide += 70
