@@ -1,5 +1,5 @@
 import pygame
-from picamera import PiCamera
+#from picamera import PiCamera
 from time import sleep
 
 red = (200,0,0)
@@ -13,7 +13,7 @@ grey = (224,224,224)
 black = (0,0,0)
 X = 800
 Y= 480
-camera = PiCamera()
+#camera = PiCamera()
 clock = pygame.time.Clock()
 
 pygame.init()
@@ -38,29 +38,26 @@ def picture(name,posx,posy,alpha):
     screen.blit(bg,bgrect)
 
 class Button(object):
-    def __init__(self,msg,x,y,w,h,ic,ac,msgz):
+    def __init__(self,msg,w,h,ic,ac,msgz):
         self.msg = msg
-        self.x = x
-        self.y = y
         self.w = w
         self.h = h
         self.ic = ic
         self.ac = ac
         self.msgz = msgz
     
-    def place(self):
+    def place(self,x,y):
+        self.x = x
+        self.y = y
         mouse = pygame.mouse.get_pos()
         clicked = pygame.mouse.get_pressed()
-        if(self.x+self.w > mouse[0] > self.x and self.y+self.h > mouse[1] > self.y):
-            pygame.draw.rect(screen, self.ac, (self.x,self.y,self.w,self.h))  #posx,posy,dimx,dimy
+        if(x+self.w > mouse[0] > x and y+self.h > mouse[1] > y):
+            pygame.draw.rect(screen, self.ac, (x,y,self.w,self.h))  #posx,posy,dimx,dimy
         
         else:
-            pygame.draw.rect(screen, self.ic, (self.x,self.y,self.w,self.h))
+            pygame.draw.rect(screen, self.ic, (x,y,self.w,self.h))
         
-        btnText = pygame.font.SysFont("Quicksand Medium",self.msgz)
-        textSurf, textRect = text_objects(self.msg, btnText)
-        textRect.center = ( self.x+self.w/2, self.y+self.h/2 )
-        screen.blit(textSurf, textRect)
+        btnText2 = text(self.msg,"Quicksand Medium",self.msgz,x+self.w/2,y+self.h/2)
 
     def is_clicked(self):
         mouse = pygame.mouse.get_pos()
@@ -72,14 +69,16 @@ class Button(object):
         
         return False
 
-def takePic():
-    camera.start_preview(alpha=192)
-    sleep(3)
-    camera.capture("/home/pi/Desktop/pic69.jpg")
-    camera.stop_preview()
+#def takePic():
+#    camera.start_preview(alpha=192)
+#    sleep(3)
+#    camera.capture("/home/pi/Desktop/pic69.jpg")
+#    camera.stop_preview()
 
 
 def kiosk_menu():
+    boundary = -X/4
+    alpha = 0
     run = True
     while run:
 
@@ -88,20 +87,30 @@ def kiosk_menu():
                 run = False  # Ends the game loop
     
         screen.fill(white)
-        doge = picture('doge2.png',X/4+40,Y/2,128)
-        title = text("Welcome to Hilbert Hostel","Quicksand",40,(X/3),60)
+        
+        doge = picture('doge2.png',X/4+40,Y/2,alpha)
+        if(alpha<128):
+            alpha += 2
+        
+        title = text("Welcome to Hilbert Hostel","Quicksand",40,boundary,60)
+        if(boundary<X/3):
+            boundary +=7
+        
         insert = text("Insert ID card here","Quicksand",20,X-150,Y*3/4)
-        smileBtn = Button("Smile!",X/5,Y-100,100,50,red,lightred,20)
-        smileBtn.place()
-        if(smileBtn.is_clicked()):
-            takePic()
-        cardBtn = Button("Book",X-200,Y/2+50,100,50,blue,lightblue,20)
-        cardBtn.place()
+        smileBtn = Button("Smile!",100,50,red,lightred,20)
+        smileBtn.place(X/5,Y-100)
+        #if(smileBtn.is_clicked()):
+        #    takePic()
+        
+        cardBtn = Button("Book",100,50,blue,lightblue,20)
+        cardBtn.place(X-200,Y/2+50)
         if(cardBtn.is_clicked()):
             book_detail()
+            boundary = -X/4
+            alpha = 0
 
         pygame.display.update() 
-        clock.tick(60)
+        clock.tick(120)
 
 def book_detail():
     run = True
@@ -117,8 +126,9 @@ def book_detail():
         title = text("Here is your booking detail","Quicksand",30,(X/4),50)
         add_on = text("Add-on","Quicksand",30,X-150,Y/3-50)
         info = text("Bluh bluh bluh bluh","Quicksand",15,X/3,Y*3/4)
-        OTPBtn = Button("Request OTP",X-200,Y-80,100,50,green,lightgreen,20)
-        OTPBtn.place()
+        OTPBtn = Button("Request OTP",100,50,green,lightgreen,15)
+        
+        OTPBtn.place(X-200,Y-80)
         if(OTPBtn.is_clicked()):
             enter_OTP()
             run = False
@@ -137,11 +147,13 @@ def enter_OTP():
         slide = 0
         screen.fill(white)
         title = text("Enter your OTP","Quicksand",30,125,50)
-        ref = text("OTP ref no.","Quicksand",25,95,Y/3+50)
+        ref = text("OTP ref no.","Quicksand",25,95,Y/3+25)
+        refNum = text("696969","Quicksand",25,X/4,Y/3+25)
         tom = picture('tomnews.jpeg',X-150,Y/4,128)
         info = text("Bluh bluh bluh bluh","Quicksand",15,X-150,Y/2)
-        submitBtn = Button("Submit",X/2-50,Y-80,100,50,green,lightgreen,20)
-        submitBtn.place()
+        submitBtn = Button("Submit",100,50,green,lightgreen,20)
+        
+        submitBtn.place(X/2-50,Y-80)
         if(submitBtn.is_clicked()):
             check_in_complete()
             run = False
@@ -154,17 +166,22 @@ def enter_OTP():
         clock.tick(60)
 
 def check_in_complete():
+    blink = 0
     run = True
     while run:
 
         for event in pygame.event.get():  # This will loop through a list of any keyboard or mouse events.
-            if event.type == pygame.QUIT: # Checks if the red button in the corner of the window is clicked
+            if event.type == pygame.QUIT or event.type == pygame.MOUSEBUTTONDOWN: # Checks if the red button in the corner of the window is clicked
                 run = False  # Ends the game loop
         
         screen.fill(white)
         title = text("Check-in complete","Quicksand",30,(X/4)-50,50)
-        info = text("Check your account on the website","Quicksand",50,X/2,Y/2)
-        
+        info = text("Check your account on the website","Quicksand",40,X/2,Y/2)
+        if(blink<60): 
+            leave = text("-Touch to leave-","Quicksand",20,(X/2),Y-80)
+        if(blink>120):
+            blink = 0   
+        blink += 1
         pygame.display.update() 
         clock.tick(60)
 
