@@ -1,6 +1,8 @@
 import pygame
 #from picamera import PiCamera
 from time import sleep
+#from card_reader import cardreader
+from threadboi import Td
 
 red = (200,0,0)
 lightred = (255,0,0)
@@ -12,9 +14,10 @@ white = (255,255,255)
 grey = (224,224,224)
 black = (0,0,0)
 X = 800
-Y= 480
+Y = 480
 #camera = PiCamera()
 clock = pygame.time.Clock()
+#cr = cardreader()
 
 pygame.init()
 screen = pygame.display.set_mode((X,Y))
@@ -97,17 +100,20 @@ def kiosk_menu():
             boundary +=7
         
         insert = text("Insert ID card here","Quicksand",20,X-150,Y*3/4)
-        smileBtn = Button("Smile!",100,50,red,lightred,20)
+        smileBtn = Button("Check-out",100,50,red,lightred,20)
         smileBtn.place(X/5,Y-100)
-        #if(smileBtn.is_clicked()):
-        #    takePic()
         
         cardBtn = Button("Book",100,50,blue,lightblue,20)
         cardBtn.place(X-200,Y/2+50)
         if(cardBtn.is_clicked()):
+            #td = Td()
+            #td.setAction(cr.read_card)
+            #td.start()
             book_detail()
             boundary = -X/4
             alpha = 0
+
+        #cr.read_card()
 
         pygame.display.update() 
         clock.tick(120)
@@ -152,15 +158,38 @@ def enter_OTP():
         tom = picture('tomnews.jpeg',X-150,Y/4,128)
         info = text("Bluh bluh bluh bluh","Quicksand",15,X-150,Y/2)
         submitBtn = Button("Submit",100,50,green,lightgreen,20)
-        
-        submitBtn.place(X/2-50,Y-80)
-        if(submitBtn.is_clicked()):
-            check_in_complete()
-            run = False
 
         for i in range(6):
             pygame.draw.rect(screen,grey,(50+slide,Y/4-20,50,50))
             slide += 70
+        
+        submitBtn.place(X/2-50,Y-80)
+    
+        if(submitBtn.is_clicked()):
+            take_pic()
+            run = False
+
+        pygame.display.update() 
+        clock.tick(60)
+
+def take_pic():
+    run = True
+    while run:
+
+        for event in pygame.event.get():  # This will loop through a list of any keyboard or mouse events.
+            if event.type == pygame.QUIT: # Checks if the red button in the corner of the window is clicked
+                run = False  # Ends the game loop
+        
+        screen.fill(white)    
+
+        title = text("Lemme take a selfie","Quicksand",40,X/3,60)  
+        
+        smileBtn = Button("Smile!",100,50,red,lightred,20)
+        smileBtn.place(X/5,Y-100)
+        if(smileBtn.is_clicked()):
+        #    takePic()  
+            check_in_complete()
+            run = False
         
         pygame.display.update() 
         clock.tick(60)
