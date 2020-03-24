@@ -1,8 +1,9 @@
 import pygame
 #from picamera import PiCamera
 from time import sleep
-#from card_reader import cardreader
+from card_reader import cardreader
 from threadboi import Td
+from smartcard.Exceptions import NoCardException
 
 red = (200,0,0)
 lightred = (255,0,0)
@@ -17,7 +18,7 @@ X = 800
 Y = 480
 #camera = PiCamera()
 clock = pygame.time.Clock()
-#cr = cardreader()
+cr = cardreader()
 
 pygame.init()
 screen = pygame.display.set_mode((X,Y))
@@ -82,6 +83,7 @@ class Button(object):
 def kiosk_menu():
     boundary = -X/4
     alpha = 0
+    is_inserted = 0
     run = True
     while run:
 
@@ -93,30 +95,42 @@ def kiosk_menu():
         
         doge = picture('doge2.png',X/4+40,Y/2,alpha)
         if(alpha<128):
-            alpha += 2
+            alpha += 3
         
         title = text("Welcome to Hilbert Hostel","Quicksand",40,boundary,60)
         if(boundary<X/3):
-            boundary +=7
+            boundary += 9
         
-        insert = text("Insert ID card here","Quicksand",20,X-150,Y*3/4)
-        smileBtn = Button("Check-out",100,50,red,lightred,20)
-        smileBtn.place(X/5,Y-100)
+        insert = text("Insert ID card to check-in","Quicksand",20,X-150,Y*3/4)
+        ckoutBtn = Button("Check-out",100,50,red,lightred,15)
+        ckoutBtn.place(X/5,Y-100)
+        
+        if(ckoutBtn.is_clicked()):
+            check_out()
+            boundary = -X/4
+            alpha = 0
         
         cardBtn = Button("Book",100,50,blue,lightblue,20)
         cardBtn.place(X-200,Y/2+50)
+        
+        try:
+            cr.connection.connect()
+            td = Td()
+            td.setAction(cr.read_card)
+            td.start()
+            book_detail()
+            boundary = -X/4
+            alpha = 0
+        except NoCardException:
+            print("no card woei")
+            
         if(cardBtn.is_clicked()):
-            #td = Td()
-            #td.setAction(cr.read_card)
-            #td.start()
             book_detail()
             boundary = -X/4
             alpha = 0
 
-        #cr.read_card()
-
         pygame.display.update() 
-        clock.tick(120)
+        clock.tick(30)
 
 def book_detail():
     run = True
@@ -124,6 +138,7 @@ def book_detail():
 
         for event in pygame.event.get():  # This will loop through a list of any keyboard or mouse events.
             if event.type == pygame.QUIT: # Checks if the red button in the corner of the window is clicked
+                cr.CID = None
                 run = False  # Ends the game loop
     
         screen.fill(white)   
@@ -131,7 +146,10 @@ def book_detail():
         tom = picture('tomnews.jpeg',X/3,Y/2-50,128)
         title = text("Here is your booking detail","Quicksand",30,(X/4),50)
         add_on = text("Add-on","Quicksand",30,X-150,Y/3-50)
-        info = text("Bluh bluh bluh bluh","Quicksand",15,X/3,Y*3/4)
+        if(cr.CID != None):
+            info = text(cr.CID,"Quicksand",15,X/3,Y*3/4)        
+        else :
+            info = text("Bluh bluh bluh bluh","Quicksand",15,X/3,Y*3/4)
         OTPBtn = Button("Request OTP",100,50,green,lightgreen,15)
         
         OTPBtn.place(X-200,Y-80)
@@ -214,6 +232,19 @@ def check_in_complete():
         pygame.display.update() 
         clock.tick(60)
 
+def check_out():
+    run = True
+    while run:
+
+        for event in pygame.event.get():  # This will loop through a list of any keyboard or mouse events.
+            if event.type == pygame.QUIT or event.type == pygame.MOUSEBUTTONDOWN: # Checks if the red button in the corner of the window is clicked
+                run = False  # Ends the game loop
+        
+        screen.fill(white)
+        title = text("Please scan QR Code to check-out","Quicksand",40,X/2,Y/2)
+        pygame.display.update() 
+        clock.tick(30)
+        
 kiosk_menu()
 
 pygame.quit()  # If we exit the loop this will execute and close our game

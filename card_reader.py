@@ -10,7 +10,7 @@ from smartcard.Exceptions import NoCardException
 from smartcard.System import readers
 from smartcard.util import HexListToBinString, toHexString, toBytes
 # Thailand ID Smartcard
-class cardreader():
+class cardreader:
     # Check card
     SELECT = [0x00, 0xA4, 0x04, 0x00, 0x08]
     THAI_CARD = [0xA0, 0x00, 0x00, 0x00, 0x54, 0x48, 0x00, 0x01]
@@ -73,17 +73,9 @@ class cardreader():
     # Photo_Part20/20
     CMD_PHOTO20 = [0x80, 0xb0, 0x14, 0x68, 0x02, 0x00, 0xFF]
     
-    def thai2unicode(self,data):
-        result = ''
-        result = bytes(data).decode('tis-620')
-        return result.strip();
+    CID = None
     
-    def getData(self,cmd, req = [0x00, 0xc0, 0x00, 0x00]):
-        data, sw1, sw2 = connection.transmit(cmd)
-        data, sw1, sw2 = connection.transmit(req + [cmd[-1]])
-        return [data, sw1, sw2];
-
-    def read_card(self):
+    def __init__(self):
         # Get all the available readers
         readerList = readers()
         print ('Available readers:')
@@ -93,50 +85,63 @@ class cardreader():
         readerSelectIndex = 0 #int(input("Select reader[0]: ") or "0")
         reader = readerList[readerSelectIndex]
         print ("Using:", reader)
-        connection = reader.createConnection()
-        try:
-            connection.connect()
-        except NoCardException:
-            print("no card la")
-            return
-        atr = connection.getATR()
+        self.connection = reader.createConnection()
+    
+    def thai2unicode(self,data):
+        result = ''
+        result = bytes(data).decode('tis-620')
+        return result.strip();
+    
+    def getData(self, cmd, req = [0x00, 0xc0, 0x00, 0x00]):
+        data, sw1, sw2 = self.connection.transmit(cmd)
+        data, sw1, sw2 = self.connection.transmit(req + [cmd[-1]])
+        return [data, sw1, sw2];
+
+    def read_card(self):
+        #try:
+            #self.connection.connect()
+        #except NoCardException:
+            #print("no card la")
+            #return
+        atr = self.connection.getATR()
         print ("ATR: " + toHexString(atr))
         if (atr[0] == 0x3B & atr[1] == 0x67):
             req = [0x00, 0xc0, 0x00, 0x01]
         else :
             req = [0x00, 0xc0, 0x00, 0x00]
         # Check card
-        data, sw1, sw2 = connection.transmit(SELECT + THAI_CARD)
+        data, sw1, sw2 = self.connection.transmit(self.SELECT + self.THAI_CARD)
         print ("Select Applet: %02X %02X" % (sw1, sw2))
         # CID
-        data = getData(CMD_CID, req)
-        cid = thai2unicode(data[0])
+        data = self.getData(self.CMD_CID, req)
+        cid = self.thai2unicode(data[0])
         print ("CID: " + cid)
+        self.CID = cid
         # TH Fullname
-        data = getData(CMD_THFULLNAME, req)
-        print ("TH Fullname: " +  thai2unicode(data[0]))
+        data = self.getData(self.CMD_THFULLNAME, req)
+        print ("TH Fullname: " +  self.thai2unicode(data[0]))
         #print(thai2unicode2(data[0])))
         # EN Fullname
-        data = getData(CMD_ENFULLNAME, req)
-        print ("EN Fullname: " + thai2unicode(data[0]))
+        data = self.getData(self.CMD_ENFULLNAME, req)
+        print ("EN Fullname: " + self.thai2unicode(data[0]))
         # Date of birth
-        data = getData(CMD_BIRTH, req)
-        print( "Date of birth: " + thai2unicode(data[0]))
+        data = self.getData(self.CMD_BIRTH, req)
+        print( "Date of birth: " + self.thai2unicode(data[0]))
         # Gender
-        data = getData(CMD_GENDER, req)
-        print ("Gender: " + thai2unicode(data[0]))
+        data = self.getData(self.CMD_GENDER, req)
+        print ("Gender: " + self.thai2unicode(data[0]))
         # Card Issuer
-        data = getData(CMD_ISSUER, req)
-        print ("Card Issuer: " + thai2unicode(data[0]))
+        data = self.getData(self.CMD_ISSUER, req)
+        print ("Card Issuer: " + self.thai2unicode(data[0]))
         # Issue Date
-        data = getData(CMD_ISSUE, req)
-        print ("Issue Date: " + thai2unicode(data[0]))
+        data = self.getData(self.CMD_ISSUE, req)
+        print ("Issue Date: " + self.thai2unicode(data[0]))
         # Expire Date
-        data = getData(CMD_EXPIRE, req)
-        print ("Expire Date: " + thai2unicode(data[0]))
+        data = self.getData(self.CMD_EXPIRE, req)
+        print ("Expire Date: " + self.thai2unicode(data[0]))
         # Address
-        data = getData(CMD_ADDRESS, req)
-        print ("Address: " + thai2unicode(data[0]))
+        data = self.getData(self.CMD_ADDRESS, req)
+        print ("Address: " + self.thai2unicode(data[0]))
         '''
         # PHOTO
         photo = getData(CMD_PHOTO1, req[0])
@@ -165,7 +170,7 @@ class cardreader():
         f.close
         '''
 #Test reading card        
-c = cardreader()
-c.read_card()    
+#c = cardreader()
+#c.read_card()    
 # Exit program
-sys.exit()
+#sys.exit()
