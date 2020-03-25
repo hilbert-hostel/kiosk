@@ -13,16 +13,17 @@ blue = (0,0,200)
 lightblue = (0,0,255)
 white = (255,255,255)
 grey = (224,224,224)
+dgrey = (200,200,200)
 black = (0,0,0)
 X = 800
-Y = 480
+Y = 460
 #camera = PiCamera()
 clock = pygame.time.Clock()
 cr = cardreader()
-
+otp = []
 pygame.init()
 screen = pygame.display.set_mode((X,Y))
-pygame.display.set_caption("yee")
+pygame.display.set_caption("Hilbert")
 
 def text_objects(text, font):
     textSurface = font.render(text, True, black)
@@ -40,6 +41,71 @@ def picture(name,posx,posy,alpha):
     bgrect.center = (posx,posy)
     bg.set_alpha(alpha)   
     screen.blit(bg,bgrect)
+
+def numpad():
+    no1 = Button("1",60,60,grey,dgrey,20)
+    no1.place(X/9,Y/2-45)
+    no2 = Button("2",60,60,grey,dgrey,20)
+    no2.place(X/9+70,Y/2-45)
+    no3 = Button("3",60,60,grey,dgrey,20)
+    no3.place(X/9+140,Y/2-45)
+    no4 = Button("4",60,60,grey,dgrey,20)
+    no4.place(X/9,Y/2+25)
+    no5 = Button("5",60,60,grey,dgrey,20)
+    no5.place(X/9+70,Y/2+25)
+    no6 = Button("6",60,60,grey,dgrey,20)
+    no6.place(X/9+140,Y/2+25)
+    no7 = Button("7",60,60,grey,dgrey,20)
+    no7.place(X/9,Y/2+95)
+    no8 = Button("8",60,60,grey,dgrey,20)
+    no8.place(X/9+70,Y/2+95)
+    no9 = Button("9",60,60,grey,dgrey,20)
+    no9.place(X/9+140,Y/2+95)
+    no0 = Button("0",60,60,grey,dgrey,20)
+    no0.place(X/9+70,Y/2+165)
+    delete = Button("DEL",60,60,grey,dgrey,20)
+    delete.place(X/9+140,Y/2+165)
+    clear = Button("CLR",60,60,grey,dgrey,20)
+    clear.place(X/9,Y/2+165)
+
+    if(len(otp)<6):
+        if(no1.is_clicked()):
+            otp.append(1)
+            sleep(0.2)
+        if(no2.is_clicked()):
+            otp.append(2)
+            sleep(0.2)
+        if(no3.is_clicked()):
+            otp.append(3)
+            sleep(0.2)        
+        if(no4.is_clicked()):
+            otp.append(4)
+            sleep(0.2)
+        if(no5.is_clicked()):
+            otp.append(5)
+            sleep(0.2)
+        if(no6.is_clicked()):
+            otp.append(6)
+            sleep(0.2)
+        if(no7.is_clicked()):
+            otp.append(7)
+            sleep(0.2)
+        if(no8.is_clicked()):
+            otp.append(8)
+            sleep(0.2)
+        if(no9.is_clicked()):
+            otp.append(9)
+            sleep(0.2)
+        if(no0.is_clicked()):
+            otp.append(0)
+            sleep(0.2)
+    if(delete.is_clicked()):
+        if(len(otp)!=0):
+            otp.pop()
+            sleep(0.2)  
+    if(clear.is_clicked()):
+        otp.clear()
+        sleep(0.2)
 
 class Button(object):
     def __init__(self,msg,w,h,ic,ac,msgz):
@@ -166,27 +232,34 @@ def enter_OTP():
 
         for event in pygame.event.get():  # This will loop through a list of any keyboard or mouse events.
             if event.type == pygame.QUIT: # Checks if the red button in the corner of the window is clicked
+                otp.clear()
                 run = False  # Ends the game loop
         
         slide = 0
         screen.fill(white)
         title = text("Enter your OTP","Quicksand",30,125,50)
-        ref = text("OTP ref no.","Quicksand",25,95,Y/3+25)
-        refNum = text("696969","Quicksand",25,X/4,Y/3+25)
+        ref = text("OTP ref no.","Quicksand",25,95,Y/3+5)
+        refNum = text("696969","Quicksand",25,X/4,Y/3+5)
         tom = picture('tomnews.jpeg',X-150,Y/4,128)
         info = text("Bluh bluh bluh bluh","Quicksand",15,X-150,Y/2)
         submitBtn = Button("Submit",100,50,green,lightgreen,20)
 
         for i in range(6):
-            pygame.draw.rect(screen,grey,(50+slide,Y/4-20,50,50))
+            pygame.draw.rect(screen,grey,(50+slide,Y/4-40,50,50))
             slide += 70
         
+        slide = 0
+        for num in otp:
+            text(str(num),"Quicksand",25,75+slide,Y/4-10)
+            slide += 70
+
         submitBtn.place(X/2-50,Y-80)
     
         if(submitBtn.is_clicked()):
             take_pic()
+            otp.clear()
             run = False
-
+        np = numpad()
         pygame.display.update() 
         clock.tick(60)
 
@@ -237,7 +310,7 @@ def check_out():
     while run:
 
         for event in pygame.event.get():  # This will loop through a list of any keyboard or mouse events.
-            if event.type == pygame.QUIT or event.type == pygame.MOUSEBUTTONDOWN: # Checks if the red button in the corner of the window is clicked
+            if event.type == pygame.QUIT:  # Checks if the red button in the corner of the window is clicked
                 run = False  # Ends the game loop
         
         screen.fill(white)
