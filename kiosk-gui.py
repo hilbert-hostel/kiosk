@@ -1,5 +1,5 @@
 import pygame
-#from picamera import PiCamera
+from picamera import PiCamera
 from time import sleep
 from card_reader import cardreader
 from threadboi import Td
@@ -17,7 +17,7 @@ dgrey = (200,200,200)
 black = (0,0,0)
 X = 800
 Y = 460
-#camera = PiCamera()
+camera = PiCamera()
 clock = pygame.time.Clock()
 cr = cardreader()
 otp = []
@@ -43,62 +43,32 @@ def picture(name,posx,posy,alpha):
     screen.blit(bg,bgrect)
 
 def numpad():
-    no1 = Button("1",60,60,grey,dgrey,20)
-    no1.place(X/9,Y/2-45)
-    no2 = Button("2",60,60,grey,dgrey,20)
-    no2.place(X/9+70,Y/2-45)
-    no3 = Button("3",60,60,grey,dgrey,20)
-    no3.place(X/9+140,Y/2-45)
-    no4 = Button("4",60,60,grey,dgrey,20)
-    no4.place(X/9,Y/2+25)
-    no5 = Button("5",60,60,grey,dgrey,20)
-    no5.place(X/9+70,Y/2+25)
-    no6 = Button("6",60,60,grey,dgrey,20)
-    no6.place(X/9+140,Y/2+25)
-    no7 = Button("7",60,60,grey,dgrey,20)
-    no7.place(X/9,Y/2+95)
-    no8 = Button("8",60,60,grey,dgrey,20)
-    no8.place(X/9+70,Y/2+95)
-    no9 = Button("9",60,60,grey,dgrey,20)
-    no9.place(X/9+140,Y/2+95)
-    no0 = Button("0",60,60,grey,dgrey,20)
-    no0.place(X/9+70,Y/2+165)
+    np = []
+    
+    for i in range (10):
+        np.append(Button(str(i),60,60,grey,dgrey,20))
     delete = Button("DEL",60,60,grey,dgrey,20)
-    delete.place(X/9+140,Y/2+165)
     clear = Button("CLR",60,60,grey,dgrey,20)
+    
+    np[1].place(X/9,Y/2-45)
+    np[2].place(X/9+70,Y/2-45)
+    np[3].place(X/9+140,Y/2-45)
+    np[4].place(X/9,Y/2+25)
+    np[5].place(X/9+70,Y/2+25)
+    np[6].place(X/9+140,Y/2+25)
+    np[7].place(X/9,Y/2+95)
+    np[8].place(X/9+70,Y/2+95)
+    np[9].place(X/9+140,Y/2+95)
+    np[0].place(X/9+70,Y/2+165)
+    delete.place(X/9+140,Y/2+165)
     clear.place(X/9,Y/2+165)
 
     if(len(otp)<6):
-        if(no1.is_clicked()):
-            otp.append(1)
-            sleep(0.2)
-        if(no2.is_clicked()):
-            otp.append(2)
-            sleep(0.2)
-        if(no3.is_clicked()):
-            otp.append(3)
-            sleep(0.2)        
-        if(no4.is_clicked()):
-            otp.append(4)
-            sleep(0.2)
-        if(no5.is_clicked()):
-            otp.append(5)
-            sleep(0.2)
-        if(no6.is_clicked()):
-            otp.append(6)
-            sleep(0.2)
-        if(no7.is_clicked()):
-            otp.append(7)
-            sleep(0.2)
-        if(no8.is_clicked()):
-            otp.append(8)
-            sleep(0.2)
-        if(no9.is_clicked()):
-            otp.append(9)
-            sleep(0.2)
-        if(no0.is_clicked()):
-            otp.append(0)
-            sleep(0.2)
+        for i in range (10): 
+            if(np[i].is_clicked()):
+                otp.append(i)
+                sleep(0.2)
+    
     if(delete.is_clicked()):
         if(len(otp)!=0):
             otp.pop()
@@ -107,6 +77,29 @@ def numpad():
         otp.clear()
         sleep(0.2)
 
+def gather_info():
+    cr.read_card()
+    # TODO: GET resv detail by cid from backend
+    
+def request_OTP():
+    # TODO: POST resv no to backend
+    return
+    
+def verify_OTP():
+    # TODO: POST OTP to backend then recieve auth token
+    return
+    
+def send_data():
+    # TODO: POST photo to backend then recieve upload confirmation
+    # TODO: POST card data with auth token to backend then recieve check-in confirmation
+    return
+
+def capture_pic():
+    camera.start_preview(alpha=192)
+    sleep(3)
+    camera.capture("/home/pi/Desktop/pic69.jpg")
+    camera.stop_preview()
+    
 class Button(object):
     def __init__(self,msg,w,h,ic,ac,msgz):
         self.msg = msg
@@ -139,14 +132,7 @@ class Button(object):
         
         return False
 
-#def takePic():
-#    camera.start_preview(alpha=192)
-#    sleep(3)
-#    camera.capture("/home/pi/Desktop/pic69.jpg")
-#    camera.stop_preview()
-
-
-def kiosk_menu():
+def kiosk_menu_page():
     boundary = -X/4
     alpha = 0
     is_inserted = 0
@@ -172,7 +158,7 @@ def kiosk_menu():
         ckoutBtn.place(X/5,Y-100)
         
         if(ckoutBtn.is_clicked()):
-            check_out()
+            check_out_page()
             boundary = -X/4
             alpha = 0
         
@@ -182,23 +168,23 @@ def kiosk_menu():
         try:
             cr.connection.connect()
             td = Td()
-            td.setAction(cr.read_card)
+            td.setAction(gather_info)
             td.start()
-            book_detail()
+            book_detail_page()
             boundary = -X/4
             alpha = 0
         except NoCardException:
             print("no card woei")
             
         if(cardBtn.is_clicked()):
-            book_detail()
+            book_detail_page()
             boundary = -X/4
             alpha = 0
 
         pygame.display.update() 
         clock.tick(30)
 
-def book_detail():
+def book_detail_page():
     run = True
     while run:
 
@@ -220,13 +206,16 @@ def book_detail():
         
         OTPBtn.place(X-200,Y-80)
         if(OTPBtn.is_clicked()):
-            enter_OTP()
+            t = Td()
+            t.setAction(request_OTP)
+            t.start()
+            enter_OTP_page()
             run = False
         
         pygame.display.update() 
         clock.tick(60)
 
-def enter_OTP():
+def enter_OTP_page():
     run = True
     while run:
 
@@ -238,7 +227,7 @@ def enter_OTP():
         slide = 0
         screen.fill(white)
         title = text("Enter your OTP","Quicksand",30,125,50)
-        ref = text("OTP ref no.","Quicksand",25,95,Y/3+5)
+        ref = text("OTP ref no. ","Quicksand",25,95,Y/3+5)
         refNum = text("696969","Quicksand",25,X/4,Y/3+5)
         tom = picture('tomnews.jpeg',X-150,Y/4,128)
         info = text("Bluh bluh bluh bluh","Quicksand",15,X-150,Y/2)
@@ -256,14 +245,17 @@ def enter_OTP():
         submitBtn.place(X/2-50,Y-80)
     
         if(submitBtn.is_clicked()):
-            take_pic()
+            t = Td()
+            t.setAction(verify_OTP)
+            t.start()
+            take_pic_page()
             otp.clear()
             run = False
         np = numpad()
         pygame.display.update() 
         clock.tick(60)
 
-def take_pic():
+def take_pic_page():
     run = True
     while run:
 
@@ -278,14 +270,17 @@ def take_pic():
         smileBtn = Button("Smile!",100,50,red,lightred,20)
         smileBtn.place(X/5,Y-100)
         if(smileBtn.is_clicked()):
-        #    takePic()  
-            check_in_complete()
+            #capture_pic()
+            t = Td()
+            t.setAction(send_data)
+            t.start()
+            check_in_complete_page()
             run = False
         
         pygame.display.update() 
         clock.tick(60)
 
-def check_in_complete():
+def check_in_complete_page():
     blink = 0
     run = True
     while run:
@@ -305,7 +300,7 @@ def check_in_complete():
         pygame.display.update() 
         clock.tick(60)
 
-def check_out():
+def check_out_page():
     run = True
     while run:
 
@@ -318,6 +313,6 @@ def check_out():
         pygame.display.update() 
         clock.tick(30)
         
-kiosk_menu()
+kiosk_menu_page()
 
 pygame.quit()  # If we exit the loop this will execute and close our game
