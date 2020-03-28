@@ -80,7 +80,7 @@ def numpad():
 def gather_info():
     cr.read_card()
     # TODO: GET resv detail by cid from backend
-    
+
 def request_OTP():
     # TODO: POST resv no to backend
     return
@@ -190,7 +190,7 @@ def book_detail_page():
 
         for event in pygame.event.get():  # This will loop through a list of any keyboard or mouse events.
             if event.type == pygame.QUIT: # Checks if the red button in the corner of the window is clicked
-                cr.CID = None
+                cr.card_data.clear()
                 run = False  # Ends the game loop
     
         screen.fill(white)   
@@ -198,8 +198,8 @@ def book_detail_page():
         tom = picture('tomnews.jpeg',X/3,Y/2-50,128)
         title = text("Here is your booking detail","Quicksand",30,(X/4),50)
         add_on = text("Add-on","Quicksand",30,X-150,Y/3-50)
-        if(cr.CID != None):
-            info = text(cr.CID,"Quicksand",15,X/3,Y*3/4)        
+        if(len(cr.card_data) != 0):
+            info = text(cr.card_data["CID"],"Quicksand",15,X/3,Y*3/4)        
         else :
             info = text("Bluh bluh bluh bluh","Quicksand",15,X/3,Y*3/4)
         OTPBtn = Button("Request OTP",100,50,green,lightgreen,15)

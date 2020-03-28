@@ -73,7 +73,7 @@ class cardreader:
     # Photo_Part20/20
     CMD_PHOTO20 = [0x80, 0xb0, 0x14, 0x68, 0x02, 0x00, 0xFF]
     
-    CID = None
+    card_data = {}
     
     def __init__(self):
         # Get all the available readers
@@ -90,7 +90,7 @@ class cardreader:
     def thai2unicode(self,data):
         result = ''
         result = bytes(data).decode('tis-620')
-        return result.strip();
+        return result.strip()
     
     def getData(self, cmd, req = [0x00, 0xc0, 0x00, 0x00]):
         data, sw1, sw2 = self.connection.transmit(cmd)
@@ -98,50 +98,78 @@ class cardreader:
         return [data, sw1, sw2];
 
     def read_card(self):
-        #try:
-            #self.connection.connect()
-        #except NoCardException:
-            #print("no card la")
-            #return
+        # try:
+        #     self.connection.connect()
+        # except NoCardException:
+        #     print("no card la")
+        #     return
         atr = self.connection.getATR()
         print ("ATR: " + toHexString(atr))
         if (atr[0] == 0x3B & atr[1] == 0x67):
             req = [0x00, 0xc0, 0x00, 0x01]
         else :
             req = [0x00, 0xc0, 0x00, 0x00]
+
         # Check card
         data, sw1, sw2 = self.connection.transmit(self.SELECT + self.THAI_CARD)
         print ("Select Applet: %02X %02X" % (sw1, sw2))
+
         # CID
         data = self.getData(self.CMD_CID, req)
         cid = self.thai2unicode(data[0])
         print ("CID: " + cid)
-        self.CID = cid
+        self.card_data["nationalID"] = cid
+
         # TH Fullname
         data = self.getData(self.CMD_THFULLNAME, req)
         print ("TH Fullname: " +  self.thai2unicode(data[0]))
-        #print(thai2unicode2(data[0])))
+        self.card_data["nameTH"] = self.thai2unicode(data[0])
+        
         # EN Fullname
         data = self.getData(self.CMD_ENFULLNAME, req)
         print ("EN Fullname: " + self.thai2unicode(data[0]))
+        self.card_data["nameEN"] = self.thai2unicode(data[0])
+
         # Date of birth
         data = self.getData(self.CMD_BIRTH, req)
         print( "Date of birth: " + self.thai2unicode(data[0]))
+        temp = self.thai2unicode(data[0])
+        ndate = "{}-{}-{}".format(temp[:4],temp[4:6],temp[6:])
+        self.card_data["birthDate"] = ndate
+
         # Gender
         data = self.getData(self.CMD_GENDER, req)
         print ("Gender: " + self.thai2unicode(data[0]))
+        if(self.thai2unicode(data[0])):
+            gd = "male"
+        else:
+            gd = "female"
+        self.card_data["gender"] = gd
+
         # Card Issuer
         data = self.getData(self.CMD_ISSUER, req)
         print ("Card Issuer: " + self.thai2unicode(data[0]))
+        self.card_data["issuer"] = self.thai2unicode(data[0])
+
         # Issue Date
         data = self.getData(self.CMD_ISSUE, req)
         print ("Issue Date: " + self.thai2unicode(data[0]))
+        temp = self.thai2unicode(data[0])
+        ndate = "{}-{}-{}".format(temp[:4],temp[4:6],temp[6:])
+        self.card_data["issueDate"] = ndate
+
         # Expire Date
         data = self.getData(self.CMD_EXPIRE, req)
         print ("Expire Date: " + self.thai2unicode(data[0]))
+        temp = self.thai2unicode(data[0])
+        ndate = "{}-{}-{}".format(temp[:4],temp[4:6],temp[6:])
+        self.card_data["expireDate"] = ndate
+
         # Address
         data = self.getData(self.CMD_ADDRESS, req)
         print ("Address: " + self.thai2unicode(data[0]))
+        self.card_data["address"] = self.thai2unicode(data[0])
+
         '''
         # PHOTO
         photo = getData(CMD_PHOTO1, req[0])
