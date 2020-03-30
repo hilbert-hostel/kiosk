@@ -1,9 +1,12 @@
 import pygame
+import datetime as dt
+import requests
 from picamera import PiCamera
 from time import sleep
 from card_reader import cardreader
 from threadboi import Td
 from smartcard.Exceptions import NoCardException
+import base64
 
 red = (200,0,0)
 lightred = (255,0,0)
@@ -20,6 +23,9 @@ Y = 460
 camera = PiCamera()
 clock = pygame.time.Clock()
 cr = cardreader()
+resv_info = {}
+refn = ""
+token = ""
 otp = []
 pygame.init()
 screen = pygame.display.set_mode((X,Y))
@@ -79,15 +85,29 @@ def numpad():
 
 def gather_info():
     cr.read_card()
-    # TODO: GET resv detail by cid from backend
+    nw = dt.datetime.now()
+    nw = nw.strftime("%Y-%m-%d")
+    host = "https://hilbert.himkwtn.me/checkin"
+    params = {"nationalID":cr.card_data["nationalID"],"date":nw}
+    ret = requests.get(host,params)
+    temp = dict(ret.json())
+    for i in temp:
+        resv_info[i] = temp[i]
 
 def request_OTP():
-    # TODO: POST resv no to backend
-    return
+    host = "https://hilbert.himkwtn.me/checkin/generate-otp/{}".format(resv_info["id"])
+    ret = requests.post(host)
+    refn = dict(ret.json())["ref"]
+    print(refn)
     
 def verify_OTP():
-    # TODO: POST OTP to backend then recieve auth token
-    return
+    host = "https://hilbert.himkwtn.me/checkin/verify-otp/{}".format(resv_info["id"])
+    notp = ""
+    for i in otp:
+        notp += str(i)    
+    body = {'otp':notp}
+    ret = requests.post(host,body)
+    print(ret)
     
 def send_data():
     # TODO: POST photo to backend then recieve upload confirmation
@@ -95,9 +115,13 @@ def send_data():
     return
 
 def capture_pic():
+    camera.resolution = (600, 450)
     camera.start_preview(alpha=192)
     sleep(3)
     camera.capture("/home/pi/Desktop/pic69.jpg")
+    with open("/home/pi/Desktop/pic69.jpg", "rb") as img_file:
+        my_string = base64.b64encode(img_file.read())
+        print(my_string)
     camera.stop_preview()
     
 class Button(object):
@@ -191,6 +215,7 @@ def book_detail_page():
         for event in pygame.event.get():  # This will loop through a list of any keyboard or mouse events.
             if event.type == pygame.QUIT: # Checks if the red button in the corner of the window is clicked
                 cr.card_data.clear()
+                resv_info.clear()
                 run = False  # Ends the game loop
     
         screen.fill(white)   
@@ -198,10 +223,12 @@ def book_detail_page():
         tom = picture('tomnews.jpeg',X/3,Y/2-50,128)
         title = text("Here is your booking detail","Quicksand",30,(X/4),50)
         add_on = text("Add-on","Quicksand",30,X-150,Y/3-50)
-        if(len(cr.card_data) != 0):
-            info = text(cr.card_data["CID"],"Quicksand",15,X/3,Y*3/4)        
+        if(len(resv_info)!= 0):
+            rif = resv_info["rooms"][0]["type"].capitalize()
+            info = text(rif,"Quicksand",15,X/3,Y*2/3)
+            
         else :
-            info = text("Bluh bluh bluh bluh","Quicksand",15,X/3,Y*3/4)
+            info = text("Bluh bluh bluh bluh","Quicksand",15,X/3,Y*2/3)
         OTPBtn = Button("Request OTP",100,50,green,lightgreen,15)
         
         OTPBtn.place(X-200,Y-80)
@@ -228,7 +255,10 @@ def enter_OTP_page():
         screen.fill(white)
         title = text("Enter your OTP","Quicksand",30,125,50)
         ref = text("OTP ref no. ","Quicksand",25,95,Y/3+5)
-        refNum = text("696969","Quicksand",25,X/4,Y/3+5)
+        if(refn != ""):
+            refNum = text(refn,"Quicksand",25,X/4,Y/3+5)
+        else:
+            refNum = text("696969","Quicksand",25,X/4,Y/3+5)
         tom = picture('tomnews.jpeg',X-150,Y/4,128)
         info = text("Bluh bluh bluh bluh","Quicksand",15,X-150,Y/2)
         submitBtn = Button("Submit",100,50,green,lightgreen,20)
@@ -270,7 +300,7 @@ def take_pic_page():
         smileBtn = Button("Smile!",100,50,red,lightred,20)
         smileBtn.place(X/5,Y-100)
         if(smileBtn.is_clicked()):
-            #capture_pic()
+            capture_pic()
             t = Td()
             t.setAction(send_data)
             t.start()

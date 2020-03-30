@@ -123,24 +123,27 @@ class cardreader:
         # TH Fullname
         data = self.getData(self.CMD_THFULLNAME, req)
         print ("TH Fullname: " +  self.thai2unicode(data[0]))
-        self.card_data["nameTH"] = self.thai2unicode(data[0])
+        nth = self.thai2unicode(data[0]).replace("#"," ")
+        self.card_data["nameTH"] = nth
         
         # EN Fullname
         data = self.getData(self.CMD_ENFULLNAME, req)
         print ("EN Fullname: " + self.thai2unicode(data[0]))
-        self.card_data["nameEN"] = self.thai2unicode(data[0])
+        nen = self.thai2unicode(data[0]).replace("#"," ")
+        self.card_data["nameEN"] = nen
 
         # Date of birth
         data = self.getData(self.CMD_BIRTH, req)
         print( "Date of birth: " + self.thai2unicode(data[0]))
         temp = self.thai2unicode(data[0])
-        ndate = "{}-{}-{}".format(temp[:4],temp[4:6],temp[6:])
+        nyear = int(temp[:4])-543
+        ndate = "{}-{}-{}".format(str(nyear),temp[4:6],temp[6:])
         self.card_data["birthDate"] = ndate
 
         # Gender
         data = self.getData(self.CMD_GENDER, req)
         print ("Gender: " + self.thai2unicode(data[0]))
-        if(self.thai2unicode(data[0])):
+        if(self.thai2unicode(data[0])=="1"):
             gd = "male"
         else:
             gd = "female"
@@ -155,47 +158,54 @@ class cardreader:
         data = self.getData(self.CMD_ISSUE, req)
         print ("Issue Date: " + self.thai2unicode(data[0]))
         temp = self.thai2unicode(data[0])
-        ndate = "{}-{}-{}".format(temp[:4],temp[4:6],temp[6:])
+        nyear = int(temp[:4])-543
+        ndate = "{}-{}-{}".format(str(nyear),temp[4:6],temp[6:])
         self.card_data["issueDate"] = ndate
 
         # Expire Date
         data = self.getData(self.CMD_EXPIRE, req)
         print ("Expire Date: " + self.thai2unicode(data[0]))
         temp = self.thai2unicode(data[0])
-        ndate = "{}-{}-{}".format(temp[:4],temp[4:6],temp[6:])
+        nyear = int(temp[:4])-543
+        ndate = "{}-{}-{}".format(str(nyear),temp[4:6],temp[6:])
         self.card_data["expireDate"] = ndate
 
         # Address
         data = self.getData(self.CMD_ADDRESS, req)
         print ("Address: " + self.thai2unicode(data[0]))
-        self.card_data["address"] = self.thai2unicode(data[0])
-
+        naddr = self.thai2unicode(data[0]).replace("#"," ")
+        test = self.thai2unicode(data[0]).split("#")
+        print (test)
+        self.card_data["address"] = naddr
+        
+        print (self.card_data)
         '''
         # PHOTO
-        photo = getData(CMD_PHOTO1, req[0])
-        photo += getData(CMD_PHOTO2, req[0])
-        photo += getData(CMD_PHOTO3, req[0])
-        photo += getData(CMD_PHOTO4, req[0])
-        photo += getData(CMD_PHOTO5, req[0])
-        photo += getData(CMD_PHOTO6, req[0])
-        photo += getData(CMD_PHOTO7, req[0])
-        photo += getData(CMD_PHOTO8, req[0])
-        photo += getData(CMD_PHOTO9, req[0])
-        photo += getData(CMD_PHOTO10, req[0])
-        photo += getData(CMD_PHOTO11, req[0])
-        photo += getData(CMD_PHOTO12, req[0])
-        photo += getData(CMD_PHOTO13, req[0])
-        photo += getData(CMD_PHOTO14, req[0])
-        photo += getData(CMD_PHOTO15, req[0])
-        photo += getData(CMD_PHOTO16, req[0])
-        photo += getData(CMD_PHOTO17, req[0])
-        photo += getData(CMD_PHOTO18, req[0])
-        photo += getData(CMD_PHOTO19, req[0])
-        photo += getData(CMD_PHOTO20, req[0])
+        photo = self.getData(self.CMD_PHOTO1, req)
+        photo += self.getData(self.CMD_PHOTO2, req)
+        photo += self.getData(self.CMD_PHOTO3, req)
+        photo += self.getData(self.CMD_PHOTO4, req)
+        photo += self.getData(self.CMD_PHOTO5, req)
+        photo += self.getData(self.CMD_PHOTO6, req)
+        photo += self.getData(self.CMD_PHOTO7, req)
+        photo += self.getData(self.CMD_PHOTO8, req)
+        photo += self.getData(self.CMD_PHOTO9, req)
+        photo += self.getData(self.CMD_PHOTO10, req)
+        photo += self.getData(self.CMD_PHOTO11, req)
+        photo += self.getData(self.CMD_PHOTO12, req)
+        photo += self.getData(self.CMD_PHOTO13, req)
+        photo += self.getData(self.CMD_PHOTO14, req)
+        photo += self.getData(self.CMD_PHOTO15, req)
+        photo += self.getData(self.CMD_PHOTO16, req)
+        photo += self.getData(self.CMD_PHOTO17, req)
+        photo += self.getData(self.CMD_PHOTO18, req)
+        photo += self.getData(self.CMD_PHOTO19, req)
+        photo += self.getData(self.CMD_PHOTO20, req)
         data = HexListToBinString(photo)
-        f = open(cid + ".jpg", "wb")
-        f.write (data)
-        f.close
+        self.card_data["idCardPhoto"] = data
+        #f = open(cid + ".jpg", "wb")
+        #f.write (data)
+        #f.close
         '''
 #Test reading card        
 #c = cardreader()
