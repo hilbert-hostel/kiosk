@@ -1,12 +1,12 @@
 import pygame
-import datetime as dt
-import requests
+import base64
 from picamera import PiCamera
 from time import sleep
 from card_reader import cardreader
-from threadboi import Td
+from threading import *
+from api import *
 from smartcard.Exceptions import NoCardException
-import base64
+
 
 red = (200,0,0)
 lightred = (255,0,0)
@@ -24,9 +24,10 @@ camera = PiCamera()
 clock = pygame.time.Clock()
 cr = cardreader()
 resv_info = {}
-refn = ""
-token = ""
+refn = {}
+token = {}
 otp = []
+
 pygame.init()
 screen = pygame.display.set_mode((X,Y))
 pygame.display.set_caption("Hilbert")
@@ -83,46 +84,47 @@ def numpad():
         otp.clear()
         sleep(0.2)
 
-def gather_info():
-    cr.read_card()
-    nw = dt.datetime.now()
-    nw = nw.strftime("%Y-%m-%d")
-    host = "https://hilbert.himkwtn.me/checkin"
-    params = {"nationalID":cr.card_data["nationalID"],"date":nw}
-    ret = requests.get(host,params)
-    temp = dict(ret.json())
-    for i in temp:
-        resv_info[i] = temp[i]
+# def gather_info():
+#     cr.read_card()
+#     nw = dt.datetime.now()
+#     nw = nw.strftime("%Y-%m-%d")
+#     host = h
+#     params = {"nationalID":cr.card_data["nationalID"],"date":nw}
+#     ret = requests.get(host,params)
+#     temp = dict(ret.json())
+#     for i in temp:
+#         resv_info[i] = temp[i]
 
-def request_OTP():
-    host = "https://hilbert.himkwtn.me/checkin/generate-otp/{}".format(resv_info["id"])
-    ret = requests.post(host)
-    refn = dict(ret.json())["ref"]
-    print(refn)
+# def request_OTP():
+#     host = (h+"/generate-otp/{}").format(resv_info["id"])
+#     ret = requests.post(host)
+#     refn = dict(ret.json())["ref"]
+#     print(refn)
     
-def verify_OTP():
-    host = "https://hilbert.himkwtn.me/checkin/verify-otp/{}".format(resv_info["id"])
-    notp = ""
-    for i in otp:
-        notp += str(i)    
-    body = {'otp':notp}
-    ret = requests.post(host,body)
-    print(ret)
+# def verify_OTP():
+#     host = h+"/verify-otp/{}".format(resv_info["id"])
+#     notp = ""
+#     for i in otp:
+#         notp += str(i)    
+#     body = {'otp':notp}
+#     ret = requests.post(host,json = body)
+#     print(ret)
     
-def send_data():
-    # TODO: POST photo to backend then recieve upload confirmation
-    # TODO: POST card data with auth token to backend then recieve check-in confirmation
-    return
+# def send_data():
+#     host = h
+#     ret = requests.post(host,files = cr.card_data)
+#     # TODO: POST photo to backend then recieve upload confirmation
+#     # TODO: POST card data with auth token to backend then recieve check-in confirmation
 
 def capture_pic():
     camera.resolution = (600, 450)
     camera.start_preview(alpha=192)
     sleep(3)
     camera.capture("/home/pi/Desktop/pic69.jpg")
+    camera.stop_preview()
     with open("/home/pi/Desktop/pic69.jpg", "rb") as img_file:
         my_string = base64.b64encode(img_file.read())
         print(my_string)
-    camera.stop_preview()
     
 class Button(object):
     def __init__(self,msg,w,h,ic,ac,msgz):
@@ -191,8 +193,7 @@ def kiosk_menu_page():
         
         try:
             cr.connection.connect()
-            td = Td()
-            td.setAction(gather_info)
+            td = Thread(target=gather_info,args=(cr,resv_info))
             td.start()
             book_detail_page()
             boundary = -X/4
@@ -233,8 +234,7 @@ def book_detail_page():
         
         OTPBtn.place(X-200,Y-80)
         if(OTPBtn.is_clicked()):
-            t = Td()
-            t.setAction(request_OTP)
+            t = Thread(target=request_OTP,args=(resv_info,refn))
             t.start()
             enter_OTP_page()
             run = False
@@ -273,15 +273,15 @@ def enter_OTP_page():
             slide += 70
 
         submitBtn.place(X/2-50,Y-80)
+        np = numpad()
     
         if(submitBtn.is_clicked()):
-            t = Td()
-            t.setAction(verify_OTP)
+            t = Thread(target=verify_OTP,args=(resv_info,otp,token))
             t.start()
             take_pic_page()
             otp.clear()
             run = False
-        np = numpad()
+        
         pygame.display.update() 
         clock.tick(60)
 
@@ -301,8 +301,7 @@ def take_pic_page():
         smileBtn.place(X/5,Y-100)
         if(smileBtn.is_clicked()):
             capture_pic()
-            t = Td()
-            t.setAction(send_data)
+            t = Thread(target=send_data,args=(cr))
             t.start()
             check_in_complete_page()
             run = False

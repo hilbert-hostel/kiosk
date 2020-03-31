@@ -179,7 +179,7 @@ class cardreader:
         self.card_data["address"] = naddr
         
         print (self.card_data)
-        '''
+        
         # PHOTO
         photo = self.getData(self.CMD_PHOTO1, req)
         photo += self.getData(self.CMD_PHOTO2, req)
@@ -202,11 +202,14 @@ class cardreader:
         photo += self.getData(self.CMD_PHOTO19, req)
         photo += self.getData(self.CMD_PHOTO20, req)
         data = HexListToBinString(photo)
+        data = data.encode('iso-8859-1')
+        with open('image.jpg','wb') as image_file:
+            image_file.write(data)
         self.card_data["idCardPhoto"] = data
         #f = open(cid + ".jpg", "wb")
         #f.write (data)
         #f.close
-        '''
+        
 #Test reading card        
 #c = cardreader()
 #c.read_card()    
