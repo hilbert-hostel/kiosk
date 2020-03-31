@@ -124,7 +124,6 @@ def capture_pic():
     camera.stop_preview()
     with open("/home/pi/Desktop/pic69.jpg", "rb") as img_file:
         my_string = base64.b64encode(img_file.read())
-        print(my_string)
     
 class Button(object):
     def __init__(self,msg,w,h,ic,ac,msgz):
@@ -226,10 +225,12 @@ def book_detail_page():
         add_on = text("Add-on","Quicksand",30,X-150,Y/3-50)
         if(len(resv_info)!= 0):
             rif = resv_info["rooms"][0]["type"].capitalize()
-            info = text(rif,"Quicksand",15,X/3,Y*2/3)
+            info = text(rif,"Quicksand",20,X/3,Y*2/3)
+            adif = text("bluh bluh bluh","Quicksand",20,X-150,Y/2)
             
         else :
-            info = text("Bluh bluh bluh bluh","Quicksand",15,X/3,Y*2/3)
+            info = text("Bluh bluh bluh bluh","Quicksand",20,X/3,Y*2/3)
+            adif = text("bluh bluh","Quicksand",20,X-150,Y/2)
         OTPBtn = Button("Request OTP",100,50,green,lightgreen,15)
         
         OTPBtn.place(X-200,Y-80)
@@ -237,6 +238,8 @@ def book_detail_page():
             t = Thread(target=request_OTP,args=(resv_info,refn))
             t.start()
             enter_OTP_page()
+            cr.card_data.clear()
+            resv_info.clear()
             run = False
         
         pygame.display.update() 
@@ -255,10 +258,10 @@ def enter_OTP_page():
         screen.fill(white)
         title = text("Enter your OTP","Quicksand",30,125,50)
         ref = text("OTP ref no. ","Quicksand",25,95,Y/3+5)
-        if(refn != ""):
-            refNum = text(refn,"Quicksand",25,X/4,Y/3+5)
+        if(len(refn)!=0):
+            refNum = text(refn['ref'],"Quicksand",25,X/4+40,Y/3+5)
         else:
-            refNum = text("696969","Quicksand",25,X/4,Y/3+5)
+            refNum = text("696969","Quicksand",25,X/4+40,Y/3+5)
         tom = picture('tomnews.jpeg',X-150,Y/4,128)
         info = text("Bluh bluh bluh bluh","Quicksand",15,X-150,Y/2)
         submitBtn = Button("Submit",100,50,green,lightgreen,20)
@@ -280,6 +283,7 @@ def enter_OTP_page():
             t.start()
             take_pic_page()
             otp.clear()
+            refn.clear()
             run = False
         
         pygame.display.update() 
@@ -300,10 +304,11 @@ def take_pic_page():
         smileBtn = Button("Smile!",100,50,red,lightred,20)
         smileBtn.place(X/5,Y-100)
         if(smileBtn.is_clicked()):
-            capture_pic()
-            t = Thread(target=send_data,args=(cr))
+            #capture_pic()
+            t = Thread(target=send_data,args=(cr,))
             t.start()
             check_in_complete_page()
+            token.clear()
             run = False
         
         pygame.display.update() 

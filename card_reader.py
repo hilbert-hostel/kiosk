@@ -181,26 +181,26 @@ class cardreader:
         print (self.card_data)
         
         # PHOTO
-        photo = self.getData(self.CMD_PHOTO1, req)
-        photo += self.getData(self.CMD_PHOTO2, req)
-        photo += self.getData(self.CMD_PHOTO3, req)
-        photo += self.getData(self.CMD_PHOTO4, req)
-        photo += self.getData(self.CMD_PHOTO5, req)
-        photo += self.getData(self.CMD_PHOTO6, req)
-        photo += self.getData(self.CMD_PHOTO7, req)
-        photo += self.getData(self.CMD_PHOTO8, req)
-        photo += self.getData(self.CMD_PHOTO9, req)
-        photo += self.getData(self.CMD_PHOTO10, req)
-        photo += self.getData(self.CMD_PHOTO11, req)
-        photo += self.getData(self.CMD_PHOTO12, req)
-        photo += self.getData(self.CMD_PHOTO13, req)
-        photo += self.getData(self.CMD_PHOTO14, req)
-        photo += self.getData(self.CMD_PHOTO15, req)
-        photo += self.getData(self.CMD_PHOTO16, req)
-        photo += self.getData(self.CMD_PHOTO17, req)
-        photo += self.getData(self.CMD_PHOTO18, req)
-        photo += self.getData(self.CMD_PHOTO19, req)
-        photo += self.getData(self.CMD_PHOTO20, req)
+        photo = self.getData(self.CMD_PHOTO1, req)[0]
+        photo += self.getData(self.CMD_PHOTO2, req)[0]
+        photo += self.getData(self.CMD_PHOTO3, req)[0]
+        photo += self.getData(self.CMD_PHOTO4, req)[0]
+        photo += self.getData(self.CMD_PHOTO5, req)[0]
+        photo += self.getData(self.CMD_PHOTO6, req)[0]
+        photo += self.getData(self.CMD_PHOTO7, req)[0]
+        photo += self.getData(self.CMD_PHOTO8, req)[0]
+        photo += self.getData(self.CMD_PHOTO9, req)[0]
+        photo += self.getData(self.CMD_PHOTO10, req)[0]
+        photo += self.getData(self.CMD_PHOTO11, req)[0]
+        photo += self.getData(self.CMD_PHOTO12, req)[0]
+        photo += self.getData(self.CMD_PHOTO13, req)[0]
+        photo += self.getData(self.CMD_PHOTO14, req)[0]
+        photo += self.getData(self.CMD_PHOTO15, req)[0]
+        photo += self.getData(self.CMD_PHOTO16, req)[0]
+        photo += self.getData(self.CMD_PHOTO17, req)[0]
+        photo += self.getData(self.CMD_PHOTO18, req)[0]
+        photo += self.getData(self.CMD_PHOTO19, req)[0]
+        photo += self.getData(self.CMD_PHOTO20, req)[0]
         data = HexListToBinString(photo)
         data = data.encode('iso-8859-1')
         with open('image.jpg','wb') as image_file:

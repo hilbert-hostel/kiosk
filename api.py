@@ -37,3 +37,4 @@ def verify_OTP(resv_info,otp,token):
 def send_data(cr):
     host = h
     ret = requests.post(host,files = cr.card_data)
+    print(ret)
