@@ -74,47 +74,15 @@ def numpad():
         for i in range (10): 
             if(np[i].is_clicked()):
                 otp.append(i)
-                sleep(0.2)
+                sleep(0.1)
     
     if(delete.is_clicked()):
         if(len(otp)!=0):
             otp.pop()
-            sleep(0.2)  
+            sleep(0.1)  
     if(clear.is_clicked()):
         otp.clear()
-        sleep(0.2)
-
-# def gather_info():
-#     cr.read_card()
-#     nw = dt.datetime.now()
-#     nw = nw.strftime("%Y-%m-%d")
-#     host = h
-#     params = {"nationalID":cr.card_data["nationalID"],"date":nw}
-#     ret = requests.get(host,params)
-#     temp = dict(ret.json())
-#     for i in temp:
-#         resv_info[i] = temp[i]
-
-# def request_OTP():
-#     host = (h+"/generate-otp/{}").format(resv_info["id"])
-#     ret = requests.post(host)
-#     refn = dict(ret.json())["ref"]
-#     print(refn)
-    
-# def verify_OTP():
-#     host = h+"/verify-otp/{}".format(resv_info["id"])
-#     notp = ""
-#     for i in otp:
-#         notp += str(i)    
-#     body = {'otp':notp}
-#     ret = requests.post(host,json = body)
-#     print(ret)
-    
-# def send_data():
-#     host = h
-#     ret = requests.post(host,files = cr.card_data)
-#     # TODO: POST photo to backend then recieve upload confirmation
-#     # TODO: POST card data with auth token to backend then recieve check-in confirmation
+        sleep(0.1)
 
 def capture_pic():
     camera.resolution = (600, 450)
@@ -223,15 +191,27 @@ def book_detail_page():
         tom = picture('tomnews.jpeg',X/3,Y/2-50,128)
         title = text("Here is your booking detail","Quicksand",30,(X/4),50)
         add_on = text("Add-on","Quicksand",30,X-150,Y/3-50)
-        if(len(resv_info)!= 0):
+        if(len(resv_info) != 0 and len(cr.card_data) != 0):
             rif = resv_info["rooms"][0]["type"].capitalize()
-            info = text(rif,"Quicksand",20,X/3,Y*2/3)
-            adif = text("bluh bluh bluh","Quicksand",20,X-150,Y/2)
+
+            name = text(cr.card_data['nameEN'],"Quicksand",15,X/4,Y*2/3)
+            room_title = text(rif,"Quicksand",20,X/3,Y*2/3)
+            room_info = text(resv_info['checkIn'],"Quicksand",15,X/4,Y*2/3+70)
+            room_info2 = text(resv_info['checkOut'],"Quicksand",15,X/4,Y*2/3+100)
+            adif1 = text("bluh 1","Quicksand",15,X-150,Y/3)
+            adif2 = text("bluh 2","Quicksand",15,X-150,Y/3+35)
+            adif3 = text("bluh 3","Quicksand",15,X-150,Y/3+70)
             
         else :
-            info = text("Bluh bluh bluh bluh","Quicksand",20,X/3,Y*2/3)
-            adif = text("bluh bluh","Quicksand",20,X-150,Y/2)
-        OTPBtn = Button("Request OTP",100,50,green,lightgreen,15)
+            name = text("This is name","Quicksand",15,X/4,Y*2/3)
+            room_title = text("This is room title","Quicksand",15,X/4,Y*2/3+30)
+            room_info = text("This is check-in","Quicksand",15,X/4,Y*2/3+70)
+            room_info2 = text("This is check-out","Quicksand",15,X/4,Y*2/3+100)
+            adif1 = text("bluh 1","Quicksand",15,X-150,Y/3)
+            adif2 = text("bluh 2","Quicksand",15,X-150,Y/3+35)
+            adif3 = text("bluh 3","Quicksand",15,X-150,Y/3+70)
+        
+        OTPBtn = Button("Request OTP",100,50,green,lightgreen,12)
         
         OTPBtn.place(X-200,Y-80)
         if(OTPBtn.is_clicked()):
@@ -256,14 +236,15 @@ def enter_OTP_page():
         
         slide = 0
         screen.fill(white)
-        title = text("Enter your OTP","Quicksand",30,125,50)
+        title = text("Enter your OTP","Quicksand",30,125,40)
         ref = text("OTP ref no. ","Quicksand",25,95,Y/3+5)
         if(len(refn)!=0):
             refNum = text(refn['ref'],"Quicksand",25,X/4+40,Y/3+5)
         else:
             refNum = text("696969","Quicksand",25,X/4+40,Y/3+5)
         tom = picture('tomnews.jpeg',X-150,Y/4,128)
-        info = text("Bluh bluh bluh bluh","Quicksand",15,X-150,Y/2)
+        info = text("Bluh bluh bluh bluh","Quicksand",15,X-200,Y/2)
+        info2 = text("Bluh bluh bluh bluh","Quicksand",15,X-200,Y/2+30)
         submitBtn = Button("Submit",100,50,green,lightgreen,20)
 
         for i in range(6):
