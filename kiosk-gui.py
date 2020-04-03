@@ -1,5 +1,6 @@
 import pygame
 import base64
+import os
 from picamera import PiCamera
 from time import sleep
 from card_reader import cardreader
@@ -184,23 +185,29 @@ def book_detail_page():
             if event.type == pygame.QUIT: # Checks if the red button in the corner of the window is clicked
                 cr.card_data.clear()
                 resv_info.clear()
+                os.remove("room_image.jpg")
+                os.remove("resized_image.jpg")
                 run = False  # Ends the game loop
     
         screen.fill(white)   
         
-        tom = picture('tomnews.jpeg',X/3,Y/2-50,128)
+        if(os.path.exists("resized_image.jpg")):
+            tom = picture('resized_image.jpg',X/3,Y/2-50,128)
+        else:
+            tom = picture('tomnews.jpeg',X/3,Y/2-50,128)
         title = text("Here is your booking detail","Quicksand",30,(X/4),50)
-        add_on = text("Add-on","Quicksand",30,X-150,Y/3-50)
+        add_on = text("Special request","Quicksand",30,X-150,Y/3-50)
+        
         if(len(resv_info) != 0 and len(cr.card_data) != 0):
             rif = resv_info["rooms"][0]["type"].capitalize()
-
-            name = text(cr.card_data['nameEN'],"Quicksand",15,X/4,Y*2/3)
-            room_title = text(rif,"Quicksand",20,X/3,Y*2/3)
-            room_info = text(resv_info['checkIn'],"Quicksand",15,X/4,Y*2/3+70)
-            room_info2 = text(resv_info['checkOut'],"Quicksand",15,X/4,Y*2/3+100)
-            adif1 = text("bluh 1","Quicksand",15,X-150,Y/3)
-            adif2 = text("bluh 2","Quicksand",15,X-150,Y/3+35)
-            adif3 = text("bluh 3","Quicksand",15,X-150,Y/3+70)
+            dur = "{} to {}".format(resv_info['checkIn'][:10],resv_info['checkOut'][:10])
+            typ = "Booking ID: {}".format(resv_info['id'])
+            
+            name = text("Name: "+cr.card_data['nameEN'],"Quicksand",15,X/4,Y*2/3)
+            bk_id = text(typ,"Quicksand",15,X/4,Y*2/3+30)
+            room_type = text("Room type: "+rif,"Quicksand",15,X/4,Y*2/3+70)
+            room_dur = text(("Duration: "+dur),"Quicksand",15,X/4,Y*2/3+100)
+            special_req = text(resv_info['specialRequests'],"Quicksand",15,X-150,Y/3)
             
         else :
             name = text("This is name","Quicksand",15,X/4,Y*2/3)
@@ -220,6 +227,8 @@ def book_detail_page():
             enter_OTP_page()
             cr.card_data.clear()
             resv_info.clear()
+            os.remove("room.image.jpg")
+            os.remove("resized_image.jpg")
             run = False
         
         pygame.display.update() 

@@ -117,24 +117,24 @@ class cardreader:
         # CID
         data = self.getData(self.CMD_CID, req)
         cid = self.thai2unicode(data[0])
-        print ("CID: " + cid)
+        #print ("CID: " + cid)
         self.card_data["nationalID"] = cid
 
         # TH Fullname
         data = self.getData(self.CMD_THFULLNAME, req)
-        print ("TH Fullname: " +  self.thai2unicode(data[0]))
+        #print ("TH Fullname: " +  self.thai2unicode(data[0]))
         nth = self.thai2unicode(data[0]).replace("#"," ")
         self.card_data["nameTH"] = nth
         
         # EN Fullname
         data = self.getData(self.CMD_ENFULLNAME, req)
-        print ("EN Fullname: " + self.thai2unicode(data[0]))
+        #print ("EN Fullname: " + self.thai2unicode(data[0]))
         nen = self.thai2unicode(data[0]).replace("#"," ")
         self.card_data["nameEN"] = nen
 
         # Date of birth
         data = self.getData(self.CMD_BIRTH, req)
-        print( "Date of birth: " + self.thai2unicode(data[0]))
+        #print( "Date of birth: " + self.thai2unicode(data[0]))
         temp = self.thai2unicode(data[0])
         nyear = int(temp[:4])-543
         ndate = "{}-{}-{}".format(str(nyear),temp[4:6],temp[6:])
@@ -142,7 +142,7 @@ class cardreader:
 
         # Gender
         data = self.getData(self.CMD_GENDER, req)
-        print ("Gender: " + self.thai2unicode(data[0]))
+        #print ("Gender: " + self.thai2unicode(data[0]))
         if(self.thai2unicode(data[0])=="1"):
             gd = "male"
         else:
@@ -151,12 +151,12 @@ class cardreader:
 
         # Card Issuer
         data = self.getData(self.CMD_ISSUER, req)
-        print ("Card Issuer: " + self.thai2unicode(data[0]))
+        #print ("Card Issuer: " + self.thai2unicode(data[0]))
         self.card_data["issuer"] = self.thai2unicode(data[0])
 
         # Issue Date
         data = self.getData(self.CMD_ISSUE, req)
-        print ("Issue Date: " + self.thai2unicode(data[0]))
+        #print ("Issue Date: " + self.thai2unicode(data[0]))
         temp = self.thai2unicode(data[0])
         nyear = int(temp[:4])-543
         ndate = "{}-{}-{}".format(str(nyear),temp[4:6],temp[6:])
@@ -164,7 +164,7 @@ class cardreader:
 
         # Expire Date
         data = self.getData(self.CMD_EXPIRE, req)
-        print ("Expire Date: " + self.thai2unicode(data[0]))
+        #print ("Expire Date: " + self.thai2unicode(data[0]))
         temp = self.thai2unicode(data[0])
         nyear = int(temp[:4])-543
         ndate = "{}-{}-{}".format(str(nyear),temp[4:6],temp[6:])
@@ -172,13 +172,11 @@ class cardreader:
 
         # Address
         data = self.getData(self.CMD_ADDRESS, req)
-        print ("Address: " + self.thai2unicode(data[0]))
+        #print ("Address: " + self.thai2unicode(data[0]))
         naddr = self.thai2unicode(data[0]).replace("#"," ")
-        test = self.thai2unicode(data[0]).split("#")
-        print (test)
         self.card_data["address"] = naddr
         
-        print (self.card_data)
+        #print (self.card_data)
         
         # PHOTO
         photo = self.getData(self.CMD_PHOTO1, req)[0]
