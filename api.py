@@ -18,8 +18,9 @@ def gather_info(cr,resv_info):
             resv_info[i] = temp[i]
         #print (resv_info)    
         load_pic(temp['rooms'][0]['photos'][0]['photo_url'])
-        resize_pic("room_image.jpg",350)
-    
+        resize_pic("room_image.jpg",350,"resized_image")
+        resize_pic("room_image.jpg",250,"resized_image2")
+
 def request_OTP(resv_info,refn):
     host = (h+"/generate-otp/{}").format(resv_info["id"])
     ret = requests.post(host)

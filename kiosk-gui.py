@@ -187,29 +187,32 @@ def book_detail_page():
                 resv_info.clear()
                 os.remove("room_image.jpg")
                 os.remove("resized_image.jpg")
+                os.remove("resized_image2.jpg")
                 run = False  # Ends the game loop
     
         screen.fill(white)   
         
-        if(os.path.exists("resized_image.jpg")):
-            tom = picture('resized_image.jpg',X/3,Y/2-50,128)
-        else:
-            tom = picture('tomnews.jpeg',X/3,Y/2-50,128)
+        #if(os.path.exists("resized_image.jpg")):
+        #    tom = picture('resized_image.jpg',X/3,Y/2-50,128)
+        #else:
+        #    tom = picture('tomnews.jpeg',X/3,Y/2-50,128)
         title = text("Here is your booking detail","Quicksand",30,(X/4),50)
         add_on = text("Special request","Quicksand",30,X-150,Y/3-50)
         
-        if(len(resv_info) != 0 and len(cr.card_data) != 0):
+        if(len(resv_info) != 0 and len(cr.card_data) != 0 and os.path.exists("resized_image.jpg")):
             rif = resv_info["rooms"][0]["type"].capitalize()
             dur = "{} to {}".format(resv_info['checkIn'][:10],resv_info['checkOut'][:10])
             typ = "Booking ID: {}".format(resv_info['id'])
             
-            name = text("Name: "+cr.card_data['nameEN'],"Quicksand",15,X/4,Y*2/3)
-            bk_id = text(typ,"Quicksand",15,X/4,Y*2/3+30)
-            room_type = text("Room type: "+rif,"Quicksand",15,X/4,Y*2/3+70)
-            room_dur = text(("Duration: "+dur),"Quicksand",15,X/4,Y*2/3+100)
+            tom = picture('resized_image.jpg',X/3,Y/2-50,128)
+            name = text("Name: "+cr.card_data['nameEN'],"Quicksand",15,X/4+50,Y*2/3)
+            bk_id = text(typ,"Quicksand",15,X/4+50,Y*2/3+30)
+            room_type = text("Room type: "+rif,"Quicksand",15,X/4+50,Y*2/3+70)
+            room_dur = text(("Duration: "+dur),"Quicksand",15,X/4+50,Y*2/3+100)
             special_req = text(resv_info['specialRequests'],"Quicksand",15,X-150,Y/3)
-            
+            note = text("You can take you card back now","Quicksand Medium",15,X-150,Y-150)
         else :
+            tom = picture('tomnews.jpeg',X/3,Y/2-50,128)
             name = text("This is name","Quicksand",15,X/4,Y*2/3)
             room_title = text("This is room title","Quicksand",15,X/4,Y*2/3+30)
             room_info = text("This is check-in","Quicksand",15,X/4,Y*2/3+70)
@@ -227,8 +230,9 @@ def book_detail_page():
             enter_OTP_page()
             cr.card_data.clear()
             resv_info.clear()
-            os.remove("room.image.jpg")
+            os.remove("room_image.jpg")
             os.remove("resized_image.jpg")
+            os.remove("resized_image2.jpg")
             run = False
         
         pygame.display.update() 
@@ -241,6 +245,7 @@ def enter_OTP_page():
         for event in pygame.event.get():  # This will loop through a list of any keyboard or mouse events.
             if event.type == pygame.QUIT: # Checks if the red button in the corner of the window is clicked
                 otp.clear()
+                refn.clear()
                 run = False  # Ends the game loop
         
         slide = 0
@@ -251,9 +256,9 @@ def enter_OTP_page():
             refNum = text(refn['ref'],"Quicksand",25,X/4+40,Y/3+5)
         else:
             refNum = text("696969","Quicksand",25,X/4+40,Y/3+5)
-        tom = picture('tomnews.jpeg',X-150,Y/4,128)
-        info = text("Bluh bluh bluh bluh","Quicksand",15,X-200,Y/2)
-        info2 = text("Bluh bluh bluh bluh","Quicksand",15,X-200,Y/2+30)
+        tom = picture('resized_image2.jpg',X-150,Y/4,128)
+        info = text("Name: "+cr.card_data['nameEN'],"Quicksand",15,X-150,Y/2)
+        info2 = text("Booking ID: {}".format(resv_info['id']),"Quicksand",15,X-150,Y/2+30)
         submitBtn = Button("Submit",100,50,green,lightgreen,20)
 
         for i in range(6):
@@ -285,6 +290,7 @@ def take_pic_page():
 
         for event in pygame.event.get():  # This will loop through a list of any keyboard or mouse events.
             if event.type == pygame.QUIT: # Checks if the red button in the corner of the window is clicked
+                token.clear()
                 run = False  # Ends the game loop
         
         screen.fill(white)    
