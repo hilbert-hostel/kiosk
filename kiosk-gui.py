@@ -15,13 +15,15 @@ green = (0,200,0)
 lightgreen = (0,255,0)
 blue = (0,0,200)
 lightblue = (0,0,255)
+orange = (255,153,51)
+lightorange = (255,178,102)
 white = (255,255,255)
 grey = (224,224,224)
 dgrey = (200,200,200)
 black = (0,0,0)
 X = 800
 Y = 460
-camera = PiCamera()
+
 clock = pygame.time.Clock()
 cr = cardreader()
 resv_info = {}
@@ -33,13 +35,13 @@ pygame.init()
 screen = pygame.display.set_mode((X,Y))
 pygame.display.set_caption("Hilbert")
 
-def text_objects(text, font):
-    textSurface = font.render(text, True, black)
+def text_objects(text, font, color):
+    textSurface = font.render(text, True, color)
     return textSurface, textSurface.get_rect()
 
-def text(des,font,size,posx,posy):
+def text(des,font,size,posx,posy,color=black):
     largeText = pygame.font.SysFont(font,size)
-    TextSurf, TextRect = text_objects(des, largeText)
+    TextSurf, TextRect = text_objects(des, largeText, color)
     TextRect.center = (posx,posy)
     screen.blit(TextSurf, TextRect)
 
@@ -84,24 +86,16 @@ def numpad():
     if(clear.is_clicked()):
         otp.clear()
         sleep(0.1)
-
-def capture_pic():
-    camera.resolution = (600, 450)
-    camera.start_preview(alpha=192)
-    sleep(3)
-    camera.capture("/home/pi/Desktop/pic69.jpg")
-    camera.stop_preview()
-    with open("/home/pi/Desktop/pic69.jpg", "rb") as img_file:
-        my_string = base64.b64encode(img_file.read())
     
 class Button(object):
-    def __init__(self,msg,w,h,ic,ac,msgz):
+    def __init__(self,msg,w,h,ic,ac,msgz,msgc=black):
         self.msg = msg
         self.w = w
         self.h = h
         self.ic = ic
         self.ac = ac
         self.msgz = msgz
+        self.msgc = msgc
     
     def place(self,x,y):
         self.x = x
@@ -114,7 +108,7 @@ class Button(object):
         else:
             pygame.draw.rect(screen, self.ic, (x,y,self.w,self.h))
         
-        btnText2 = text(self.msg,"Quicksand Medium",self.msgz,x+self.w/2,y+self.h/2)
+        btnText2 = text(self.msg,"Quicksand Medium",self.msgz,x+self.w/2,y+self.h/2,self.msgc)
 
     def is_clicked(self):
         mouse = pygame.mouse.get_pos()
@@ -148,8 +142,8 @@ def kiosk_menu_page():
             boundary += 9
         
         insert = text("Insert ID card to check-in","Quicksand",20,X-150,Y*3/4)
-        ckoutBtn = Button("Check-out",100,50,red,lightred,15)
-        ckoutBtn.place(X/5,Y-100)
+        ckoutBtn = Button("Check-out",150,60,orange,lightorange,15,white)
+        ckoutBtn.place(80,Y-100)
         
         if(ckoutBtn.is_clicked()):
             check_out_page()
@@ -187,24 +181,20 @@ def book_detail_page():
                 resv_info.clear()
                 os.remove("room_image.jpg")
                 os.remove("resized_image.jpg")
-                os.remove("resized_image2.jpg")
+                os.remove("resized_room2.jpg")
                 run = False  # Ends the game loop
     
         screen.fill(white)   
         
-        #if(os.path.exists("resized_image.jpg")):
-        #    tom = picture('resized_image.jpg',X/3,Y/2-50,128)
-        #else:
-        #    tom = picture('tomnews.jpeg',X/3,Y/2-50,128)
         title = text("Here is your booking detail","Quicksand",30,(X/4),50)
         add_on = text("Special request","Quicksand",30,X-150,Y/3-50)
         
-        if(len(resv_info) != 0 and len(cr.card_data) != 0 and os.path.exists("resized_image.jpg")):
+        if(len(resv_info) != 0 and len(cr.card_data) != 0 and os.path.exists("resized_room.jpg")):
             rif = resv_info["rooms"][0]["type"].capitalize()
             dur = "{} to {}".format(resv_info['checkIn'][:10],resv_info['checkOut'][:10])
             typ = "Booking ID: {}".format(resv_info['id'])
             
-            tom = picture('resized_image.jpg',X/3,Y/2-50,128)
+            tom = picture('resized_room.jpg',X/3,Y/2-50,128)
             name = text("Name: "+cr.card_data['nameEN'],"Quicksand",15,X/4+50,Y*2/3)
             bk_id = text(typ,"Quicksand",15,X/4+50,Y*2/3+30)
             room_type = text("Room type: "+rif,"Quicksand",15,X/4+50,Y*2/3+70)
@@ -221,9 +211,9 @@ def book_detail_page():
             adif2 = text("bluh 2","Quicksand",15,X-150,Y/3+35)
             adif3 = text("bluh 3","Quicksand",15,X-150,Y/3+70)
         
-        OTPBtn = Button("Request OTP",100,50,green,lightgreen,12)
+        OTPBtn = Button("Request OTP",150,50,orange,lightorange,13,white)
         
-        OTPBtn.place(X-200,Y-80)
+        OTPBtn.place(X-220,Y-80)
         if(OTPBtn.is_clicked()):
             t = Thread(target=request_OTP,args=(resv_info,refn))
             t.start()
@@ -256,10 +246,11 @@ def enter_OTP_page():
             refNum = text(refn['ref'],"Quicksand",25,X/4+40,Y/3+5)
         else:
             refNum = text("696969","Quicksand",25,X/4+40,Y/3+5)
-        tom = picture('resized_image2.jpg',X-150,Y/4,128)
+        tom = picture('resized_room2.jpg',X-150,Y/4,128)
         info = text("Name: "+cr.card_data['nameEN'],"Quicksand",15,X-150,Y/2)
         info2 = text("Booking ID: {}".format(resv_info['id']),"Quicksand",15,X-150,Y/2+30)
-        submitBtn = Button("Submit",100,50,green,lightgreen,20)
+        info3 = room_type = text("Room type: "+rif,"Quicksand",15,X/4+50,Y*2/3+70)
+        submitBtn = Button("Submit",100,50,orange,lightorange,20,white)
 
         for i in range(6):
             pygame.draw.rect(screen,grey,(50+slide,Y/4-40,50,50))
@@ -295,18 +286,32 @@ def take_pic_page():
         
         screen.fill(white)    
 
-        title = text("Lemme take a selfie","Quicksand",40,X/3,60)  
+        title = text("Selfie verification","Quicksand",35,X/2,45)
+        des = text("Please take a selfie before finishing the process","Quicksand",20,X/2,70)
         
-        smileBtn = Button("Smile!",100,50,red,lightred,20)
+        r = pygame.draw.rect(screen,black,(X/2-140,Y/2-105,280,210))
+        r2 = pygame.draw.rect(screen,white,(X/2-139,Y/2-104,278,208))
+
+        smileBtn = Button("Smile!",120,50,orange,lightorange,20,white)
         smileBtn.place(X/5,Y-100)
+
+        if(os.path.exists("resized_selfie.jpg")):
+            smileBtn.msg = "Retake"
+            proc = picture('resized_selfie.jpg',X/2,Y/2,128)
+            finishBtn = Button("Finish",120,50,orange,lightorange,20,white)
+            finishBtn.place(X*4/5-120,Y-100)
+
+            if finishBtn.is_clicked() :
+                t = Thread(target=send_data,args=(cr,))
+                t.start()
+                check_in_complete_page()
+                token.clear()
+                run = False
+
         if(smileBtn.is_clicked()):
-            #capture_pic()
-            t = Thread(target=send_data,args=(cr,))
-            t.start()
-            check_in_complete_page()
-            token.clear()
-            run = False
-        
+            capture_pic()
+            print('bruh')
+           
         pygame.display.update() 
         clock.tick(60)
 
