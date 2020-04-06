@@ -1,5 +1,6 @@
 import requests
 import PIL
+from time import sleep
 from picamera import PiCamera
 from PIL import Image
 
@@ -18,12 +19,12 @@ def resize_pic(pic,bw,name):
     img = img.resize((basewidth, hsize), PIL.Image.ANTIALIAS)
     img.save('{}.jpg'.format(name))
 
-def capture_pic():
+def capture_pic(cr):
     camera.resolution = (640, 480)
     camera.start_preview(alpha=192)
     sleep(3)
-    camera.capture("checkin_photo.jpg")
+    camera.capture("selfie.jpg")
     camera.stop_preview()
-    resized_pic("checkin_photo.jpg",21,"resized_selfie")
-    with open("/home/pi/Desktop/pic69.jpg", "rb") as img_file:
-        my_string = base64.b64encode(img_file.read())
+    resize_pic("selfie.jpg",280,"resized_selfie")
+    with open("selfie.jpg", "wb") as img_file:
+        cr.card_data['kioskPhoto'] = img_file

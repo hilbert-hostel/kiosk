@@ -1,13 +1,10 @@
 import pygame
-import base64
 import os
-from picamera import PiCamera
 from time import sleep
 from card_reader import cardreader
 from threading import *
 from api import *
 from smartcard.Exceptions import NoCardException
-
 
 red = (200,0,0)
 lightred = (255,0,0)
@@ -150,8 +147,8 @@ def kiosk_menu_page():
             boundary = -X/4
             alpha = 0
         
-        cardBtn = Button("Book",100,50,blue,lightblue,20)
-        cardBtn.place(X-200,Y/2+50)
+        #cardBtn = Button("Book",100,50,blue,lightblue,20)
+        #cardBtn.place(X-200,Y/2+50)
         
         try:
             cr.connection.connect()
@@ -163,10 +160,10 @@ def kiosk_menu_page():
         except NoCardException:
             print("no card woei")
             
-        if(cardBtn.is_clicked()):
-            book_detail_page()
-            boundary = -X/4
-            alpha = 0
+        #if(cardBtn.is_clicked()):
+        #    book_detail_page()
+        #    boundary = -X/4
+        #    alpha = 0
 
         pygame.display.update() 
         clock.tick(30)
@@ -180,50 +177,44 @@ def book_detail_page():
                 cr.card_data.clear()
                 resv_info.clear()
                 os.remove("room_image.jpg")
-                os.remove("resized_image.jpg")
+                os.remove("resized_room.jpg")
                 os.remove("resized_room2.jpg")
+                os.remove("card_image.jpg")
                 run = False  # Ends the game loop
     
+        OTPBtn = Button("Request OTP",150,50,orange,lightorange,13,white)
+    
         screen.fill(white)   
-        
         title = text("Here is your booking detail","Quicksand",30,(X/4),50)
-        add_on = text("Special request","Quicksand",30,X-150,Y/3-50)
         
         if(len(resv_info) != 0 and len(cr.card_data) != 0 and os.path.exists("resized_room.jpg")):
             rif = resv_info["rooms"][0]["type"].capitalize()
+            nor = resv_info["rooms"][0]["beds"]
             dur = "{} to {}".format(resv_info['checkIn'][:10],resv_info['checkOut'][:10])
             typ = "Booking ID: {}".format(resv_info['id'])
             
+            add_on = text("Special request","Quicksand",30,X-150,Y/3-50)
             tom = picture('resized_room.jpg',X/3,Y/2-50,128)
             name = text("Name: "+cr.card_data['nameEN'],"Quicksand",15,X/4+50,Y*2/3)
             bk_id = text(typ,"Quicksand",15,X/4+50,Y*2/3+30)
-            room_type = text("Room type: "+rif,"Quicksand",15,X/4+50,Y*2/3+70)
+            room_type = text("Room type: {} , {} bed".format(rif,nor),"Quicksand",15,X/4+50,Y*2/3+70)
             room_dur = text(("Duration: "+dur),"Quicksand",15,X/4+50,Y*2/3+100)
             special_req = text(resv_info['specialRequests'],"Quicksand",15,X-150,Y/3)
             note = text("You can take you card back now","Quicksand Medium",15,X-150,Y-150)
+            OTPBtn.place(X-220,Y-80)
+            if(OTPBtn.is_clicked()):
+                t = Thread(target=request_OTP,args=(resv_info,refn))
+                t.start()
+                enter_OTP_page()
+                cr.card_data.clear()
+                resv_info.clear()
+                os.remove("room_image.jpg")
+                os.remove("resized_room.jpg")
+                os.remove("resized_room2.jpg")
+                os.remove("card_image.jpg")
+                run = False
         else :
-            tom = picture('tomnews.jpeg',X/3,Y/2-50,128)
-            name = text("This is name","Quicksand",15,X/4,Y*2/3)
-            room_title = text("This is room title","Quicksand",15,X/4,Y*2/3+30)
-            room_info = text("This is check-in","Quicksand",15,X/4,Y*2/3+70)
-            room_info2 = text("This is check-out","Quicksand",15,X/4,Y*2/3+100)
-            adif1 = text("bluh 1","Quicksand",15,X-150,Y/3)
-            adif2 = text("bluh 2","Quicksand",15,X-150,Y/3+35)
-            adif3 = text("bluh 3","Quicksand",15,X-150,Y/3+70)
-        
-        OTPBtn = Button("Request OTP",150,50,orange,lightorange,13,white)
-        
-        OTPBtn.place(X-220,Y-80)
-        if(OTPBtn.is_clicked()):
-            t = Thread(target=request_OTP,args=(resv_info,refn))
-            t.start()
-            enter_OTP_page()
-            cr.card_data.clear()
-            resv_info.clear()
-            os.remove("room_image.jpg")
-            os.remove("resized_image.jpg")
-            os.remove("resized_image2.jpg")
-            run = False
+            pls = text("Please wait","Quicksand",45,X/2,Y/2)
         
         pygame.display.update() 
         clock.tick(60)
@@ -243,13 +234,14 @@ def enter_OTP_page():
         title = text("Enter your OTP","Quicksand",30,125,40)
         ref = text("OTP ref no. ","Quicksand",25,95,Y/3+5)
         if(len(refn)!=0):
-            refNum = text(refn['ref'],"Quicksand",25,X/4+40,Y/3+5)
+            refNum = text(refn['referenceCode'],"Quicksand",25,X/4+20,Y/3+5)
         else:
-            refNum = text("696969","Quicksand",25,X/4+40,Y/3+5)
+            refNum = text("-","Quicksand",25,X/4+40,Y/3+5)
+        rif = resv_info["rooms"][0]["type"].capitalize()
         tom = picture('resized_room2.jpg',X-150,Y/4,128)
         info = text("Name: "+cr.card_data['nameEN'],"Quicksand",15,X-150,Y/2)
         info2 = text("Booking ID: {}".format(resv_info['id']),"Quicksand",15,X-150,Y/2+30)
-        info3 = room_type = text("Room type: "+rif,"Quicksand",15,X/4+50,Y*2/3+70)
+        info3 = room_type = text("Room type: "+rif,"Quicksand",15,X-150,Y*2/3+70)
         submitBtn = Button("Submit",100,50,orange,lightorange,20,white)
 
         for i in range(6):
@@ -282,12 +274,14 @@ def take_pic_page():
         for event in pygame.event.get():  # This will loop through a list of any keyboard or mouse events.
             if event.type == pygame.QUIT: # Checks if the red button in the corner of the window is clicked
                 token.clear()
+                os.remove("selfie.jpg")
+                os.remove("resized_selfie.jpg")
                 run = False  # Ends the game loop
         
         screen.fill(white)    
 
         title = text("Selfie verification","Quicksand",35,X/2,45)
-        des = text("Please take a selfie before finishing the process","Quicksand",20,X/2,70)
+        des = text("Please take a selfie before finishing the process","Quicksand",20,X/2,80)
         
         r = pygame.draw.rect(screen,black,(X/2-140,Y/2-105,280,210))
         r2 = pygame.draw.rect(screen,white,(X/2-139,Y/2-104,278,208))
@@ -297,20 +291,22 @@ def take_pic_page():
 
         if(os.path.exists("resized_selfie.jpg")):
             smileBtn.msg = "Retake"
-            proc = picture('resized_selfie.jpg',X/2,Y/2,128)
+            smileBtn.place(X/5,Y-100)
+            proc = picture('resized_selfie.jpg',X/2,Y/2,255)
             finishBtn = Button("Finish",120,50,orange,lightorange,20,white)
             finishBtn.place(X*4/5-120,Y-100)
 
             if finishBtn.is_clicked() :
-                t = Thread(target=send_data,args=(cr,))
+                t = Thread(target=send_data,args=(cr,token))
                 t.start()
                 check_in_complete_page()
                 token.clear()
+                os.remove("selfie.jpg")
+                os.remove("resized_selfie.jpg")
                 run = False
 
         if(smileBtn.is_clicked()):
-            capture_pic()
-            print('bruh')
+            capture_pic(cr)
            
         pygame.display.update() 
         clock.tick(60)

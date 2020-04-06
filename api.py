@@ -24,6 +24,7 @@ def gather_info(cr,resv_info):
 def request_OTP(resv_info,refn):
     host = (h+"/generate-otp/{}").format(resv_info["id"])
     ret = requests.post(host)
+    print(ret.request.headers)
     if ret.status_code == 200:
         temp = dict(ret.json())
         for i in temp:
@@ -42,9 +43,11 @@ def verify_OTP(resv_info,otp,token):
         temp = dict(ret.json())
         for i in temp:
             token[i] = temp[i]
-    #print(token)
+    print(token)
 
-def send_data(cr):
+def send_data(cr,token):
+    print(cr.card_data)
     host = h
-    ret = requests.post(host,files = cr.card_data)
+    hdr = {'Authentication':'Bearer '+token['token']}
+    ret = requests.post(host,files = cr.card_data,headers=hdr)
     print(ret)
