@@ -191,12 +191,11 @@ def book_detail_page():
             rif = resv_info["rooms"][0]["type"].capitalize()
             nor = resv_info["rooms"][0]["beds"]
             dur = "{} to {}".format(resv_info['checkIn'][:10],resv_info['checkOut'][:10])
-            typ = "Booking ID: {}".format(resv_info['id'])
             
             add_on = text("Special request","Quicksand",30,X-150,Y/3-50)
             tom = picture('resized_room.jpg',X/3,Y/2-50,128)
             name = text("Name: "+cr.card_data['nameEN'],"Quicksand",15,X/4+50,Y*2/3)
-            bk_id = text(typ,"Quicksand",15,X/4+50,Y*2/3+30)
+            bk_id = text("Booking ID: "+resv_info['id'],"Quicksand",15,X/4+50,Y*2/3+30)
             room_type = text("Room type: {} , {} bed".format(rif,nor),"Quicksand",15,X/4+50,Y*2/3+70)
             room_dur = text(("Duration: "+dur),"Quicksand",15,X/4+50,Y*2/3+100)
             special_req = text(resv_info['specialRequests'],"Quicksand",15,X-150,Y/3)
@@ -236,11 +235,11 @@ def enter_OTP_page():
         if(len(refn)!=0):
             refNum = text(refn['referenceCode'],"Quicksand",25,X/4+20,Y/3+5)
         else:
-            refNum = text("-","Quicksand",25,X/4+40,Y/3+5)
+            refNum = text("-","Quicksand",25,X/4+20,Y/3+5)
         rif = resv_info["rooms"][0]["type"].capitalize()
         tom = picture('resized_room2.jpg',X-150,Y/4,128)
         info = text("Name: "+cr.card_data['nameEN'],"Quicksand",15,X-150,Y/2)
-        info2 = text("Booking ID: {}".format(resv_info['id']),"Quicksand",15,X-150,Y/2+30)
+        info2 = text("Booking ID: "+resv_info['id'],"Quicksand",15,X-150,Y/2+30)
         info3 = room_type = text("Room type: "+rif,"Quicksand",15,X-150,Y*2/3+70)
         submitBtn = Button("Submit",100,50,orange,lightorange,20,white)
 
