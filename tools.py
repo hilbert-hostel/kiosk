@@ -26,5 +26,6 @@ def capture_pic(cr):
     camera.capture("selfie.jpg")
     camera.stop_preview()
     resize_pic("selfie.jpg",280,"resized_selfie")
-    with open("selfie.jpg", "wb") as img_file:
-        cr.card_data['kioskPhoto'] = img_file
+    with open("selfie.jpg", "rb") as img_file:
+        x = img_file.read()
+        cr.card_data['kioskPhoto'] = x

@@ -201,9 +201,10 @@ class cardreader:
         photo += self.getData(self.CMD_PHOTO20, req)[0]
         data = HexListToBinString(photo)
         data = data.encode('iso-8859-1')
+        print(data)
         with open('card_image.jpg','wb') as image_file:
             image_file.write(data)
-            self.card_data["idCardPhoto"] = image_file
+            self.card_data["idCardPhoto"] = data
         #f = open(cid + ".jpg", "wb")
         #f.write (data)
         #f.close
