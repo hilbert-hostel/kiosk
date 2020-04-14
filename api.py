@@ -7,6 +7,7 @@ h = "https://hilbert.himkwtn.me/checkin"
 def gather_info(cr,resv_info):
     cr.read_card()
     nw = dt.datetime.now()
+    #nw = nw.isoformat()
     nw = nw.strftime("%Y-%m-%d")
     #nw = "2020-04-04"
     host = h
@@ -47,8 +48,14 @@ def verify_OTP(resv_info,otp,token):
             token[i] = temp[i]
 
 def send_data(cr,token):
+    cdata = cr.card_data
+    cdata.pop("kioskPhoto")
+    cdata.pop("idCardPhoto")
+    photo = {}
+    photo["kioskPhoto"] = cr.card_data["kioskPhoto"]
+    photo["idCardPhoto"] = cr.card_data["idCardPhoto"]
     host = h
     hdr = {'Authorization':'Bearer '+token['token']}
-    ret = requests.post(host,files = cr.card_data,headers=hdr)
+    ret = requests.post(host,files=photo,data=cdata,headers=hdr)
     print(ret)
-    print(dict(ret.json()))
+    
