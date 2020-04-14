@@ -35,7 +35,6 @@ def request_OTP(resv_info,refn):
     
 def verify_OTP(resv_info,otp,token):
     host = h+"/verify-otp/{}".format(resv_info["id"])
-    print(host)
     notp = ""
     for i in otp:
         notp += str(i)    
@@ -49,13 +48,15 @@ def verify_OTP(resv_info,otp,token):
 
 def send_data(cr,token):
     cdata = cr.card_data
-    cdata.pop("kioskPhoto")
-    cdata.pop("idCardPhoto")
     photo = {}
     photo["kioskPhoto"] = cr.card_data["kioskPhoto"]
     photo["idCardPhoto"] = cr.card_data["idCardPhoto"]
+    cdata.pop("kioskPhoto")
+    cdata.pop("idCardPhoto")
     host = h
     hdr = {'Authorization':'Bearer '+token['token']}
+    print(photo.keys())
+    print(cdata.keys())
     ret = requests.post(host,files=photo,data=cdata,headers=hdr)
     print(ret)
     

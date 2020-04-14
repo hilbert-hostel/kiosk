@@ -92,15 +92,15 @@ def rating_bar():
     btn = []
     for i in range(5):
         btn.append(Button("",50,50,white,white,5))
-        btn[i].place(X/3-20+70*i,Y/3)
+        btn[i].place(X/3-20+70*i,Y/3+10)
             
     for i in range(5):
         if i < rate["rate"] :
-            picture("star2c.jpg",X/3+5+70*i,Y/3+25,255)
+            picture("star2c.jpg",X/3+5+70*i,Y/3+35,255)
         else:
-            picture("star2.jpg",X/3+5+70*i,Y/3+25,255)
+            picture("star2.jpg",X/3+5+70*i,Y/3+35,255)
         
-        text(rt[i],"Quicksand",12,X/3+5+70*i,Y/3+60)
+        text(rt[i],"Quicksand",12,X/3+5+70*i,Y/3+70)
     
     for i in range(5) :
         if(btn[i].is_clicked()):
@@ -219,14 +219,14 @@ def book_detail_page():
         title = text("Here is your booking detail","Quicksand",30,(X/4),50)
         
         if(len(resv_info) != 0 and len(cr.card_data) != 0 and os.path.exists("resized_room.jpg")):
-            if len(cr.card_data["rooms"])>1 :
+            if len(resv_info["rooms"])>1 :
                 if pointer==0 :    
                     nxtrmBtn.place(X/2+50,Y/2+50)
                     if(nxtrmBtn.is_clicked()):
                         pointer += 1
                         sleep(0.1)
-                elif pointer == len(cr.card_data["rooms"])-1 :
-                    pvsrmBtn.place(X/6-50,Y/2+50)
+                elif pointer == len(resv_info["rooms"])-1 :
+                    pvsrmBtn.place(X/6-80,Y/2+50)
                     if(pvsrmBtn.is_clicked()):
                         pointer -= 1
                         sleep(0.1)
@@ -235,7 +235,7 @@ def book_detail_page():
                     if(nxtrmBtn.is_clicked()):
                         pointer += 1
                         sleep(0.1) 
-                    pvsrmBtn.place(X/6-50,Y/2+50)
+                    pvsrmBtn.place(X/6-80,Y/2+50)
                     if(pvsrmBtn.is_clicked()):
                         pointer -= 1
                         sleep(0.1)  
@@ -290,10 +290,12 @@ def enter_OTP_page():
         else:
             refNum = text("-","Quicksand",25,X/4+20,Y/3+5)
         rif = resv_info["rooms"][0]["type"].capitalize()
+        dur = "{} to {}".format(resv_info['checkIn'][:10],resv_info['checkOut'][:10])
         tom = picture('resized_room2.jpg',X-150,Y/4,128)
         info = text("Name: "+cr.card_data['nameEN'],"Quicksand",15,X-150,Y/2)
         info2 = text("Booking ID: "+resv_info['id'],"Quicksand",15,X-150,Y/2+30)
-        info3 = room_type = text("Room type: "+rif,"Quicksand",15,X-150,Y*2/3+70)
+        info3 = text("Duration: "+dur,"Quicksand",15,X-150,Y/2+60)
+        info4 = room_type = text("Room type: "+rif,"Quicksand",15,X-150,Y*2/3+70)
         submitBtn = Button("Submit",100,50,orange,lightorange,20,white)
 
         for i in range(6):
@@ -392,7 +394,7 @@ def check_out_page():
                 run = False  # Ends the game loop
         
         screen.fill(white)
-        hb = text("Hilbert Hostel","Quicksand",40,X/2,70,orange)
+        hb = text("Hilbert Hostel","Quicksand Medium",40,X/2,70,orange)
         title = text("Please scan QR Code to check-out","Quicksand",20,X/2,Y/4)
         yee = Button("Finish",120,50,blue,lightblue,20,white)
         back = Button("Back",150,50,orange,lightorange,20,white)
@@ -415,7 +417,7 @@ def check_out_confirm_page():
                 run = False  # Ends the game loop
         
         screen.fill(white)
-        hb = text("Hilbert Hostel","Quicksand",40,X/2,70,orange)
+        hb = text("Hilbert Hostel","Quicksand Medium",40,X/2,70,orange)
         r = pygame.draw.rect(screen,black,(X/2-200,Y/2-105,400,210))
         r2 = pygame.draw.rect(screen,white,(X/2-200,Y/2-104,400,210))
         title = text("Confirmed checkout?","Quicksand",20,X/2,Y/2-10)
@@ -443,17 +445,17 @@ def check_out_success_page():
         
         screen.fill(white)
         homeBtn = Button("Home",150,50,orange,lightorange,20,white)
-        hb = text("Hilbert Hostel","Quicksand",40,X/2,70,orange)
-        hb2 = text("How was Hilbert Hostel experience?","Quicksand",30,X/2,100)
-        des = text("Share your experience while memories are fresh.","Quicksand",12,X/2,Y/2+50)
-        des2 = text("Your review will help Hilbert Hostel imporves accomodation and tell those interested in what you'll find.","Quicksand",12,X/2,Y/2+70)
-        des3 = text("Hilbert Hostel won't see your suggestion until you review you as well.","Quicksand",12,X/2,Y/2+110)
+        hb = text("Hilbert Hostel","Quicksand Medium",40,X/2,70,orange)
+        hb2 = text("How was Hilbert Hostel experience?","Quicksand",30,X/2,110)
+        des = text("Share your experience while memories are fresh.","Quicksand",14,X/2,Y/2+60)
+        des2 = text("Your review will help Hilbert Hostel imporves accomodation and tell those interested in what you'll find.","Quicksand",14,X/2,Y/2+80)
+        des3 = text("Hilbert Hostel won't see your suggestion until you review you as well.","Quicksand",14,X/2,Y/2+120)
         
         thanks += rating_bar()
         if thanks != 0 :
             text("Thank you for rating","Quicksand",20,X/2,Y/2+20)
 
-        homeBtn.place(X*3/4,Y-100)
+        homeBtn.place(X*3/4,Y-90)
         if homeBtn.is_clicked():
             thanks = 0
             rate["rate"] = 0

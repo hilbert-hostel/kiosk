@@ -138,7 +138,7 @@ class cardreader:
         temp = self.thai2unicode(data[0])
         nyear = int(temp[:4])-543
         ndate = "{}-{}-{}".format(str(nyear),temp[4:6],temp[6:])
-        self.card_data["birthDate"] = ndate
+        self.card_data["birthdate"] = ndate
 
         # Gender
         data = self.getData(self.CMD_GENDER, req)
