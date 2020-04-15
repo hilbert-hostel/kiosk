@@ -2,7 +2,8 @@ import requests
 import datetime as dt
 from tools import *
 
-h = "https://hilbert.himkwtn.me/checkin"
+h = "https://hilbert.himkwtn.me/checkIn"
+h2 = "https://hilbert.himkwtn.me/checkOut"
 
 def gather_info(cr,resv_info):
     cr.read_card()
@@ -60,3 +61,11 @@ def send_data(cr,token):
     ret = requests.post(host,files=photo,data=cdata,headers=hdr)
     print(ret)
     
+def check_out(resv_info):
+    payload = {"reservationID":resv_info}
+    host = h2
+    ret = requests.post(host,json=payload)
+    print(ret)
+    if ret.status_code == 200:
+        return True
+    return False

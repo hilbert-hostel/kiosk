@@ -1,7 +1,11 @@
 '''
 This version of kiosk has no API or card reader
-Use for editing UI easily
+Used for editing UI easily
 Feel free to play
+
+Note: This GUI is made for Raspberry Pi 4
+So the font might be shitty but it's still be able to play in any device la
+Or you could replace "Quicksand" to any font you would like
 '''
 
 import pygame
@@ -25,8 +29,6 @@ X = 800
 Y = 460
 
 clock = pygame.time.Clock()
-otp = []
-rate = {"rate":0}
 
 pygame.init()
 screen = pygame.display.set_mode((X,Y))
@@ -51,7 +53,7 @@ def picture(name,posx,posy,alpha):
     bg.set_alpha(alpha)   
     screen.blit(bg,bgrect)
 
-def numpad():
+def numpad(otp):
     np = []
     
     for i in range (10):
@@ -86,7 +88,7 @@ def numpad():
         otp.clear()
         sleep(0.1)
 
-def rating_bar():
+def rating_bar(rate):
     rt = ["Poor","Not good","Average","Good","Excellent"]
     btn = []
     for i in range(5):
@@ -94,7 +96,7 @@ def rating_bar():
         btn[i].place(X/3-20+70*i,Y/3+10)
             
     for i in range(5):
-        if i < rate["rate"] :
+        if i < rate["r"] :
             picture("star2c.jpg",X/3+5+70*i,Y/3+35,255)
         else:
             picture("star2.jpg",X/3+5+70*i,Y/3+35,255)
@@ -104,7 +106,7 @@ def rating_bar():
     for i in range(5) :
         if(btn[i].is_clicked()):
             sleep(0.1)
-            rate["rate"] = i+1
+            rate["r"] = i+1
             return 1
     
     return 0
@@ -188,7 +190,7 @@ def kiosk_menu_page():
 
 def book_detail_page():
     run = True
-    today = dt.datetime.now().isoformat()
+    today = dt.datetime.now().isoformat()[:10]
     room = [{
         "name":"King Size" ,
         "beds":"5" ,
@@ -210,8 +212,8 @@ def book_detail_page():
                 run = False  # Ends the game loop
     
         OTPBtn = Button("Request OTP",150,50,orange,lightorange,13,white)
-        nxtrmBtn = Button("Next",60,60,dgrey,grey,13)
-        pvsrmBtn = Button("Back",60,60,dgrey,grey,13)
+        nxtrmBtn = Button("",60,60,white,grey,13)
+        pvsrmBtn = Button("",60,60,white,grey,13)
         
         screen.fill(white)   
         title = text("Here is your booking detail","Quicksand",30,(X/4),50)  
@@ -220,27 +222,31 @@ def book_detail_page():
         name = text("Name: Phumarin Nuntavatana","Quicksand",15,X/4+50,Y*2/3)
         bk_id = text("Booking ID: X69X420X69X","Quicksand",15,X/4+50,Y*2/3+30)
         room_type = text("Room type: {} , {} beds".format(room[pointer]["name"],room[pointer]["beds"]),"Quicksand",15,X/4+50,Y*2/3+70)
-        room_dur = text("Duration: "+today,"Quicksand",15,X/4+50,Y*2/3+100)
+        room_dur = text("Duration: {} to {}".format(today,"6969-69-69"),"Quicksand",15,X/4+50,Y*2/3+100)
         special_req = text("I need water","Quicksand",15,X-150,Y/3)
         note = text("You can take you card back now","Quicksand Medium",15,X-150,Y-150)
         
         if len(room) > 1 :
             if(pointer==0):    
                 nxtrmBtn.place(X/2+50,Y/2+50)
+                picture("arrowr.jpg",X/2+80,Y/2+80,190)
                 if(nxtrmBtn.is_clicked()):
                     pointer += 1
                     sleep(0.1)
             elif pointer == len(room)-1 :
                 pvsrmBtn.place(X/6-80,Y/2+50)
+                picture("arrowl.jpg",X/6-50,Y/2+80,190)
                 if(pvsrmBtn.is_clicked()):
                     pointer -= 1
                     sleep(0.1)
             else:
                 nxtrmBtn.place(X/2+50,Y/2+50)
+                picture("arrowr.jpg",X/2+80,Y/2+80,190)
                 if(nxtrmBtn.is_clicked()):
                     pointer += 1
                     sleep(0.1) 
                 pvsrmBtn.place(X/6-80,Y/2+50)
+                picture("arrowl.jpg",X/6-50,Y/2+80,190)
                 if(pvsrmBtn.is_clicked()):
                     pointer -= 1
                     sleep(0.1)         
@@ -256,6 +262,7 @@ def book_detail_page():
 
 def enter_OTP_page():
     run = True
+    otp = []
     while run:
 
         for event in pygame.event.get():  # This will loop through a list of any keyboard or mouse events.
@@ -285,7 +292,7 @@ def enter_OTP_page():
             slide += 70
 
         submitBtn.place(X/2-50,Y-80)
-        np = numpad()
+        np = numpad(otp)
     
         if(submitBtn.is_clicked()):
             take_pic_page()
@@ -297,7 +304,7 @@ def enter_OTP_page():
 
 def take_pic_page():
     run = True
-    aclick = False
+    aclick = 0
     
     while run:
 
@@ -315,10 +322,12 @@ def take_pic_page():
         smileBtn = Button("Smile!",120,50,orange,lightorange,20,white)
         smileBtn.place(X/5,Y-100)
 
-        if(aclick):
+        if(aclick!=0):
             smileBtn.msg = "Retake"
-            smileBtn.place(X/5,Y-100)
-            proc = picture('yajuu.jpg',X/2,Y/2,255)
+            if aclick == 1 :
+                proc = picture('yajuu.jpg',X/2,Y/2,255)
+            else:
+                proc = picture('jerry.jpg',X/2,Y/2,255)
             finishBtn = Button("Finish",120,50,orange,lightorange,20,white)
             finishBtn.place(X*4/5-120,Y-100)
 
@@ -328,7 +337,11 @@ def take_pic_page():
                 run = False
 
         if smileBtn.is_clicked() :
-            aclick = True
+            sleep(0.1)
+            if aclick != 2 :
+                aclick += 1
+            else:
+                aclick -= 1
                 
         pygame.display.update() 
         clock.tick(60)
@@ -405,12 +418,13 @@ def check_out_confirm_page():
 def check_out_success_page():
     run = True
     thanks = 0
+    rate = {"r":0}
     while run:
 
         for event in pygame.event.get():  # This will loop through a list of any keyboard or mouse events.
             if event.type == pygame.QUIT:  # Checks if the red button in the corner of the window is clicked
                 thanks = 0
-                rate["rate"] = 0
+                rate["r"] = 0
                 run = False  # Ends the game loop
         
         screen.fill(white)
@@ -421,14 +435,14 @@ def check_out_success_page():
         des2 = text("Your review will help Hilbert Hostel imporves accomodation and tell those interested in what you'll find.","Quicksand",14,X/2,Y/2+80)
         des3 = text("Hilbert Hostel won't see your suggestion until you review you as well.","Quicksand",14,X/2,Y/2+120)
         
-        thanks += rating_bar()
+        thanks += rating_bar(rate)
         if thanks != 0 :
             text("Thank you for rating","Quicksand",20,X/2,Y/2+20)
 
         homeBtn.place(X*3/4,Y-90)
         if homeBtn.is_clicked():
             thanks = 0
-            rate["rate"] = 0
+            rate["r"] = 0
             run = False
         
         pygame.display.update() 
