@@ -4,6 +4,7 @@ from time import sleep
 from card_reader import cardreader
 from threading import *
 from api import *
+#from qr_reader import *
 from smartcard.Exceptions import NoCardException
 
 red = (200,0,0)
@@ -407,7 +408,11 @@ def check_out_page():
 
         yee.place(X/2-60,Y/2+50)
         if yee.is_clicked() :
-            run = check_out_confirm_page()
+            sleep(0.1)
+            #read_qr()
+            if check_out("6969") :
+                run = check_out_confirm_page()
+        
         pygame.display.update() 
         clock.tick(30)
 
