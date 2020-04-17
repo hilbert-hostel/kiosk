@@ -9,6 +9,7 @@ Or you could replace "Quicksand" to any font you would like
 '''
 
 import pygame
+
 import os
 import datetime as dt
 from time import sleep
@@ -33,6 +34,7 @@ clock = pygame.time.Clock()
 pygame.init()
 screen = pygame.display.set_mode((X,Y))
 pygame.display.set_caption("Hilbert")
+pygame.display.toggle_fullscreen()
 
 #------------Components--------------------
 
@@ -54,10 +56,8 @@ def picture(name,posx,posy,alpha):
     screen.blit(bg,bgrect)
 
 def numpad(otp):
-    np = []
+    np = [Button(str(i),60,60,grey,dgrey,20) for i in range (10)]
     
-    for i in range (10):
-        np.append(Button(str(i),60,60,grey,dgrey,20))
     delete = Button("DEL",60,60,grey,dgrey,20)
     clear = Button("CLR",60,60,grey,dgrey,20)
     
@@ -90,9 +90,9 @@ def numpad(otp):
 
 def rating_bar(rate):
     rt = ["Poor","Not good","Average","Good","Excellent"]
-    btn = []
+    btn = [Button("",50,50,white,white,5) for i in range(5)]
+    
     for i in range(5):
-        btn.append(Button("",50,50,white,white,5))
         btn[i].place(X/3-20+70*i,Y/3+10)
             
     for i in range(5):
@@ -159,7 +159,7 @@ def kiosk_menu_page():
     
         screen.fill(white)
         
-        doge = picture('doge2.png',X/4+40,Y/2,alpha)
+        doge = picture('doge2.jpg',X/4+40,Y/2,alpha)
         if(alpha<128):
             alpha += 3
         
@@ -170,7 +170,13 @@ def kiosk_menu_page():
         insert = text("Insert ID card to check-in","Quicksand",20,X-150,Y*3/4)
         ckoutBtn = Button("Check-out",150,60,orange,lightorange,15,white)
         ckoutBtn.place(80,Y-100)
-        
+        bclose = Button("",40,40,white,white,20)
+        bclose.place(X*3/4+100,Y/4-70)
+        cross = picture('cross.jpg',X*3/4+120,Y/4-50,255)
+
+        if bclose.is_clicked() :
+            run = False
+
         if(ckoutBtn.is_clicked()):
             check_out_page()
             boundary = -X/4
@@ -194,7 +200,7 @@ def book_detail_page():
     room = [{
         "name":"King Size" ,
         "beds":"5" ,
-        "pic":"tomnews.jpeg"
+        "pic":"tomnews.jpg"
     },{
         "name":"Queen Size" ,
         "beds":"10"  ,
@@ -202,7 +208,7 @@ def book_detail_page():
     },{
         "name":"Yee Size" ,
         "beds":"15"  ,
-        "pic":"tomnews.jpeg"  
+        "pic":"tomnews.jpg"  
     }]
     pointer = 0
     while run:
@@ -258,7 +264,7 @@ def book_detail_page():
             run = False
         
         pygame.display.update() 
-        clock.tick(60)
+        clock.tick(30)
 
 def enter_OTP_page():
     run = True
@@ -276,7 +282,7 @@ def enter_OTP_page():
         ref = text("OTP ref no. ","Quicksand",25,95,Y/3+5)
        
         refNum = text("6031848721","Quicksand",25,X/4+40,Y/3+5)
-        tom = picture('tomnews.jpeg',X-150,Y/4,128)
+        tom = picture('tomnews.jpg',X-150,Y/4,128)
         info = text("Name: Phumarin Nuntavatana","Quicksand",15,X-150,Y/2)
         info2 = text("Booking ID: X69X420X69X","Quicksand",15,X-150,Y/2+30)
         info3 = room_type = text("Room type: King Size , 5 beds","Quicksand",15,X-150,Y*2/3+70)
@@ -300,7 +306,7 @@ def enter_OTP_page():
             run = False
         
         pygame.display.update() 
-        clock.tick(60)
+        clock.tick(30)
 
 def take_pic_page():
     run = True
@@ -344,7 +350,7 @@ def take_pic_page():
                 aclick -= 1
                 
         pygame.display.update() 
-        clock.tick(60)
+        clock.tick(30)
 
 def check_in_complete_page():
     blink = 0
@@ -358,13 +364,13 @@ def check_in_complete_page():
         screen.fill(white)
         title = text("Check-in complete","Quicksand",30,(X/4)-50,50)
         info = text("Check your account on the website","Quicksand",40,X/2,Y/2)
-        if(blink<60): 
+        if(blink<30): 
             leave = text("-Touch to leave-","Quicksand",20,(X/2),Y-80)
-        if(blink>120):
+        if(blink>60):
             blink = 0   
         blink += 1
         pygame.display.update() 
-        clock.tick(60)
+        clock.tick(30)
 
 def check_out_page():
     run = True
