@@ -86,14 +86,15 @@ def check_out(resv_info):
     if ret.status_code == 200:
         return True
     elif ret.status_code == 500:
-        send_log("Check-out failed with code status 500")
+        print("lol")
+        #send_log("Check-out failed with code status 500")
     return False
 
 def send_log(message,level="error"):
     nw = dt.datetime.now()
     ts = int(dt.datetime.timestamp(nw))
     host = h3
-    log = {"from":"kiosk","body":message,"level":"error","timestamp":ts}
+    log = {"from":"kiosk","body":message,"level":level,"timestamp":ts}
     ret2 = requests.post(host,json=log)
     print("log: "+message)
     print(ret2)

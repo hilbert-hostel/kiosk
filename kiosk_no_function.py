@@ -78,15 +78,13 @@ def numpad(otp):
         for i in range (10): 
             if(np[i].is_clicked()):
                 otp.append(i)
-                sleep(0.1)
     
     if(delete.is_clicked()):
         if(len(otp)!=0):
             otp.pop()
-            sleep(0.1)  
+              
     if(clear.is_clicked()):
         otp.clear()
-        sleep(0.1)
 
 def rating_bar(rate):
     rt = ["Poor","Not good","Average","Good","Excellent"]
@@ -105,7 +103,6 @@ def rating_bar(rate):
     
     for i in range(5) :
         if(btn[i].is_clicked()):
-            sleep(0.1)
             rate["r"] = i+1
             return 1
     
@@ -140,6 +137,7 @@ class Button(object):
 
         if(self.x+self.w > mouse[0] > self.x and self.y+self.h > mouse[1] > self.y):
             if(clicked[0] == 1):
+                sleep(0.1)
                 return True
         
         return False
@@ -184,8 +182,7 @@ def kiosk_menu_page():
         
         cardBtn = Button("Book",100,50,blue,lightblue,20)
         cardBtn.place(X-200,Y/2+50)
-        
-          
+                  
         if(cardBtn.is_clicked()):
             book_detail_page()
             boundary = -X/4
@@ -237,25 +234,21 @@ def book_detail_page():
                 nxtrmBtn.place(X/2+50,Y/2+50)
                 picture("arrowr.jpg",X/2+80,Y/2+80,190)
                 if(nxtrmBtn.is_clicked()):
-                    pointer += 1
-                    sleep(0.1)
+                    pointer += 1                    
             elif pointer == len(room)-1 :
                 pvsrmBtn.place(X/6-80,Y/2+50)
                 picture("arrowl.jpg",X/6-50,Y/2+80,190)
                 if(pvsrmBtn.is_clicked()):
-                    pointer -= 1
-                    sleep(0.1)
+                    pointer -= 1                    
             else:
                 nxtrmBtn.place(X/2+50,Y/2+50)
                 picture("arrowr.jpg",X/2+80,Y/2+80,190)
                 if(nxtrmBtn.is_clicked()):
                     pointer += 1
-                    sleep(0.1) 
                 pvsrmBtn.place(X/6-80,Y/2+50)
                 picture("arrowl.jpg",X/6-50,Y/2+80,190)
                 if(pvsrmBtn.is_clicked()):
-                    pointer -= 1
-                    sleep(0.1)         
+                    pointer -= 1         
         
         OTPBtn.place(X-220,Y-80)
         if(OTPBtn.is_clicked()):
@@ -308,7 +301,6 @@ def enter_OTP_page():
             otp.clear()
             run = False
         if(reqOTPBtn.is_clicked()):
-            sleep(0.1)
             pos = 1
             
         pygame.display.update() 
@@ -344,12 +336,10 @@ def take_pic_page():
             finishBtn.place(X*4/5-120,Y-100)
 
             if finishBtn.is_clicked() :
-                
                 check_in_complete_page()
                 run = False
 
         if smileBtn.is_clicked() :
-            sleep(0.1)
             if aclick != 2 :
                 aclick += 1
             else:

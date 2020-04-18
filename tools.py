@@ -4,8 +4,6 @@ from time import sleep
 from picamera import PiCamera
 from PIL import Image
 
-camera = PiCamera()
-
 def load_pic(url):
     img_data = requests.get(url).content
     with open('room_image.jpg', 'wb') as handler:
@@ -20,6 +18,7 @@ def resize_pic(pic,bw,name):
     img.save('{}.jpg'.format(name))
 
 def capture_pic(cr):
+    camera = PiCamera()
     camera.resolution = (640, 480)
     camera.start_preview(alpha=192)
     sleep(3)

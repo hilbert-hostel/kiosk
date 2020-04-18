@@ -4,7 +4,7 @@ from time import sleep
 from card_reader import cardreader
 from threading import *
 from api import *
-#from qr_reader import *
+from qr_reader import *
 from smartcard.Exceptions import NoCardException
 
 red = (200,0,0)
@@ -33,7 +33,7 @@ screen = pygame.display.set_mode((X,Y))
 pygame.display.set_caption("Hilbert")
 #pygame.display.toggle_fullscreen()
 
-send_log("Kiosk is started","init")
+#send_log("Kiosk is started","init")
 #------------Components--------------------
 
 def text_objects(text, font, color):
@@ -76,15 +76,13 @@ def numpad(otp):
         for i in range (10): 
             if(np[i].is_clicked()):
                 otp.append(i)
-                sleep(0.1)
     
     if(delete.is_clicked()):
         if(len(otp)!=0):
             otp.pop()
-            sleep(0.1)  
+             
     if(clear.is_clicked()):
         otp.clear()
-        sleep(0.1)
 
 def rating_bar(rate):
     rt = ["Poor","Not good","Average","Good","Excellent"]
@@ -103,7 +101,6 @@ def rating_bar(rate):
     
     for i in range(5) :
         if(btn[i].is_clicked()):
-            sleep(0.1)
             rate["r"] = i+1
             return 1
     
@@ -138,6 +135,7 @@ class Button(object):
 
         if(self.x+self.w > mouse[0] > self.x and self.y+self.h > mouse[1] > self.y):
             if(clicked[0] == 1):
+                sleep(0.1)
                 return True
         
         return False
@@ -232,24 +230,20 @@ def book_detail_page():
                     picture("arrowr.jpg",X/2+80,Y/2+80,190)
                     if(nxtrmBtn.is_clicked()):
                         pointer += 1
-                        sleep(0.1)
                 elif pointer == len(resv_info["rooms"])-1 :
                     pvsrmBtn.place(X/6-80,Y/2+50)
                     picture("arrowl.jpg",X/6-50,Y/2+80,190)
                     if(pvsrmBtn.is_clicked()):
-                        pointer -= 1
-                        sleep(0.1)
+                        pointer -= 1                        
                 else:
                     nxtrmBtn.place(X/2+50,Y/2+50)
                     picture("arrowr.jpg",X/2+80,Y/2+80,190)
                     if(nxtrmBtn.is_clicked()):
-                        pointer += 1
-                        sleep(0.1) 
+                        pointer += 1                        
                     pvsrmBtn.place(X/6-80,Y/2+50)
                     picture("arrowl.jpg",X/6-50,Y/2+80,190)
                     if(pvsrmBtn.is_clicked()):
-                        pointer -= 1
-                        sleep(0.1)  
+                        pointer -= 1                         
 
             rif = resv_info["rooms"][pointer]["type"].capitalize()
             nor = resv_info["rooms"][pointer]["beds"]
@@ -304,6 +298,20 @@ def enter_OTP_page():
             refNum = text(refn['referenceCode'],"Quicksand",25,X/4+20,Y/3+5)
             submitBtn.place(X/2-50,Y-80)
             reqOTPBtn.place(X/2-60,Y-150)
+            
+            if(submitBtn.is_clicked()):
+                sleep(0.1)
+                if verify_OTP(resv_info,otp,token) :
+                    take_pic_page()
+                    otp.clear()
+                    refn.clear()
+                    run = False
+                else:
+                    invalid = True
+                
+            if(reqOTPBtn.is_clicked()):                
+                t = Thread(target=request_OTP,args=(resv_info,refn))
+                t.start()
         else:
             refNum = text("-","Quicksand",25,X/4+20,Y/3+5)
         rif = resv_info["rooms"][0]["type"].capitalize()
@@ -315,7 +323,7 @@ def enter_OTP_page():
         info4 = room_type = text("Room type: "+rif,"Quicksand",15,X-150,Y*2/3+70)
         if invalid :
             text("Invalid OTP","Quicksand",20,X/2,Y/2,red)
-            text("Please try again",20,X/2,Y/2+30)
+            text("Please try again","Quicksand",20,X/2,Y/2+30,red)
         
         for i in range(6):
             pygame.draw.rect(screen,grey,(50+slide,Y/4-40,50,50))
@@ -327,22 +335,6 @@ def enter_OTP_page():
             slide += 70
 
         np = numpad(otp)
-    
-        if(submitBtn.is_clicked()):
-            sleep(0.1)
-            if verify_OTP(resv_info,otp,token) :
-                take_pic_page()
-                otp.clear()
-                refn.clear()
-                run = False
-            
-            else:
-                invalid = True
-                
-        if(reqOTPBtn.is_clicked()):
-            sleep(0.1)
-            t = Thread(target=request_OTP,args=(resv_info,refn))
-            t.start()
         
         pygame.display.update() 
         clock.tick(30)
@@ -413,6 +405,7 @@ def check_in_complete_page():
 
 def check_out_page():
     run = True
+    co = {}
     while run:
 
         for event in pygame.event.get():  # This will loop through a list of any keyboard or mouse events.
@@ -427,13 +420,15 @@ def check_out_page():
         back.place(X*3/4,Y*3/4)
         if back.is_clicked() :
             run = False
-
+        
+        if len(co) != 0 :
+            if check_out(co["data"]) :
+                run = check_out_confirm_page()
+            co.clear()
         yee.place(X/2-60,Y/2+50)
         if yee.is_clicked() :
-            sleep(0.1)
-            #read_qr()
-            if check_out("6969") :
-                run = check_out_confirm_page()
+            td = Thread(target=read_qr,args=(co,))
+            td.start()
         
         pygame.display.update() 
         clock.tick(30)

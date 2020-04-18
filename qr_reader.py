@@ -7,7 +7,7 @@ import time
 import cv2
 import time
 
-def read_qr():
+def read_qr(co):
     # construct the argument parser and parse the arguments
     ap = argparse.ArgumentParser()
     ap.add_argument("-o", "--output", type=str, default="barcodes.csv",
@@ -15,9 +15,8 @@ def read_qr():
     args = vars(ap.parse_args())
 
     print("[INFO] starting video stream...")
-    vs = VideoStream(src=0).start()
-    time.sleep(2.0)
-
+    vs = VideoStream(usePiCamera=True).start()
+    time.sleep(1)
     csv = open(args["output"], "w")
     found = set()
 
@@ -49,10 +48,10 @@ def read_qr():
         cv2.imshow("Barcode Scanner", frame)
         key = cv2.waitKey(1) & 0xFF
         if (data != ""):
-            print("Publish : " + data)
-        
-        if key == ord("q"):
+            print(data)
+            co["data"] = data
             break
+         
         time.sleep(1/24)
 
     print("[INFO] cleaning up...")
@@ -60,4 +59,4 @@ def read_qr():
     cv2.destroyAllWindows()
     vs.stop()
 
-read_qr()
+#read_qr()
