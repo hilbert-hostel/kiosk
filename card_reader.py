@@ -6,6 +6,7 @@ import sys
 #import traits
 import codecs
 from PIL import Image
+from api import send_log
 from smartcard.Exceptions import NoCardException
 from smartcard.System import readers
 from smartcard.util import HexListToBinString, toHexString, toBytes
@@ -83,9 +84,14 @@ class cardreader:
             print(readerIndex, readerItem)
         # Select reader
         readerSelectIndex = 0 #int(input("Select reader[0]: ") or "0")
-        reader = readerList[readerSelectIndex]
-        print ("Using:", reader)
-        self.connection = reader.createConnection()
+        try:
+            reader = readerList[readerSelectIndex]
+            print ("Using:", reader)
+            self.connection = reader.createConnection()
+        except:
+            self.connection = None
+            send_log("Card reader is missing")
+            
     
     def thai2unicode(self,data):
         result = ''

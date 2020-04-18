@@ -20,7 +20,7 @@ grey = (224,224,224)
 dgrey = (200,200,200)
 black = (0,0,0)
 X = 800
-Y = 460
+Y = 480
 
 clock = pygame.time.Clock()
 cr = cardreader()
@@ -31,8 +31,9 @@ token = {}
 pygame.init()
 screen = pygame.display.set_mode((X,Y))
 pygame.display.set_caption("Hilbert")
-# pygame.display.toggle_fullscreen()
+#pygame.display.toggle_fullscreen()
 
+send_log("Kiosk is started","init")
 #------------Components--------------------
 
 def text_objects(text, font, color):
@@ -90,15 +91,15 @@ def rating_bar(rate):
     btn = [Button("",50,50,white,white,5) for i in range(5)]
     
     for i in range(5):
-        btn[i].place(X/3-20+70*i,Y/3+10)
+        btn[i].place(X/3-20+70*i,Y/3+20)
             
     for i in range(5):
         if i < rate["r"] :
-            picture("star2c.jpg",X/3+5+70*i,Y/3+35,255)
+            picture("star2c.jpg",X/3+5+70*i,Y/3+45,255)
         else:
-            picture("star2.jpg",X/3+5+70*i,Y/3+35,255)
+            picture("star2.jpg",X/3+5+70*i,Y/3+45,255)
         
-        text(rt[i],"Quicksand",12,X/3+5+70*i,Y/3+70)
+        text(rt[i],"Quicksand",12,X/3+5+70*i,Y/3+80)
     
     for i in range(5) :
         if(btn[i].is_clicked()):
@@ -164,7 +165,6 @@ def kiosk_menu_page():
         if(boundary<X/3):
             boundary += 9
         
-        insert = text("Insert ID card to check-in","Quicksand",20,X-150,Y*3/4)
         ckoutBtn = Button("Check-out",150,60,orange,lightorange,15,white)
         ckoutBtn.place(80,Y-100)
         bclose = Button("",40,40,white,white,20)
@@ -181,17 +181,20 @@ def kiosk_menu_page():
         
         #cardBtn = Button("Book",100,50,blue,lightblue,20)
         #cardBtn.place(X-200,Y/2+50)
-        
-        try:
-            cr.connection.connect()
-            td = Thread(target=gather_info,args=(cr,resv_info))
-            td.start()
-            book_detail_page()
-            boundary = -X/4
-            alpha = 0
-        except NoCardException:
-            print("no card woei")
-            
+        if cr.connection != None :
+            insert = text("Insert ID card to check-in","Quicksand",20,X-150,Y*3/4)
+            try:
+                cr.connection.connect()
+                td = Thread(target=gather_info,args=(cr,resv_info))
+                td.start()
+                book_detail_page()
+                boundary = -X/4
+                alpha = 0
+            except NoCardException:
+                print("no card woei")
+        else:
+            er = text("Card reader is missing","Quicksand",18,X-150,Y*3/4-25)
+            er2 = text("Please restart the program","Quicksand",18,X-150,Y*3/4)
         #if(cardBtn.is_clicked()):
         #    book_detail_page()
         #    boundary = -X/4
@@ -282,6 +285,7 @@ def book_detail_page():
 def enter_OTP_page():
     run = True
     otp = []
+    invalid = False
     while run:
 
         for event in pygame.event.get():  # This will loop through a list of any keyboard or mouse events.
@@ -294,8 +298,12 @@ def enter_OTP_page():
         screen.fill(white)
         title = text("Enter your OTP","Quicksand",30,125,40)
         ref = text("OTP ref no. ","Quicksand",25,95,Y/3+5)
+        submitBtn = Button("Submit",100,50,orange,lightorange,18,white)
+        reqOTPBtn = Button("Request OTP",140,50,orange,lightorange,18,white)
         if(len(refn)!=0):
             refNum = text(refn['referenceCode'],"Quicksand",25,X/4+20,Y/3+5)
+            submitBtn.place(X/2-50,Y-80)
+            reqOTPBtn.place(X/2-60,Y-150)
         else:
             refNum = text("-","Quicksand",25,X/4+20,Y/3+5)
         rif = resv_info["rooms"][0]["type"].capitalize()
@@ -305,8 +313,10 @@ def enter_OTP_page():
         info2 = text("Booking ID: "+resv_info['id'],"Quicksand",15,X-150,Y/2+30)
         info3 = text("Duration: "+dur,"Quicksand",15,X-150,Y/2+60)
         info4 = room_type = text("Room type: "+rif,"Quicksand",15,X-150,Y*2/3+70)
-        submitBtn = Button("Submit",100,50,orange,lightorange,20,white)
-
+        if invalid :
+            text("Invalid OTP","Quicksand",20,X/2,Y/2,red)
+            text("Please try again",20,X/2,Y/2+30)
+        
         for i in range(6):
             pygame.draw.rect(screen,grey,(50+slide,Y/4-40,50,50))
             slide += 70
@@ -316,16 +326,23 @@ def enter_OTP_page():
             text(str(num),"Quicksand",25,75+slide,Y/4-10)
             slide += 70
 
-        submitBtn.place(X/2-50,Y-80)
         np = numpad(otp)
     
         if(submitBtn.is_clicked()):
-            t = Thread(target=verify_OTP,args=(resv_info,otp,token))
+            sleep(0.1)
+            if verify_OTP(resv_info,otp,token) :
+                take_pic_page()
+                otp.clear()
+                refn.clear()
+                run = False
+            
+            else:
+                invalid = True
+                
+        if(reqOTPBtn.is_clicked()):
+            sleep(0.1)
+            t = Thread(target=request_OTP,args=(resv_info,refn))
             t.start()
-            take_pic_page()
-            otp.clear()
-            refn.clear()
-            run = False
         
         pygame.display.update() 
         clock.tick(30)
@@ -431,8 +448,8 @@ def check_out_confirm_page():
         
         screen.fill(white)
         hb = text("Hilbert Hostel","Quicksand Medium",40,X/2,70,orange)
-        r = pygame.draw.rect(screen,black,(X/2-200,Y/2-105,400,210))
-        r2 = pygame.draw.rect(screen,white,(X/2-200,Y/2-104,400,210))
+        r = pygame.draw.rect(screen,dgrey,(X/2-200,Y/2-125,400,210))
+        r2 = pygame.draw.rect(screen,white,(X/2-200,Y/2-124,400,210))
         title = text("Confirmed checkout?","Quicksand",20,X/2,Y/2-10)
         cfm = Button("Confirm",150,50,orange,lightorange,20,white)
         cancel = Button("Cancel",150,50,orange,lightorange,20,white)
@@ -462,7 +479,7 @@ def check_out_success_page():
         screen.fill(white)
         homeBtn = Button("Home",150,50,orange,lightorange,20,white)
         hb = text("Hilbert Hostel","Quicksand Medium",40,X/2,70,orange)
-        hb2 = text("How was Hilbert Hostel experience?","Quicksand",30,X/2,110)
+        hb2 = text("How was Hilbert Hostel experience?","Quicksand",30,X/2,120)
         des = text("Share your experience while memories are fresh.","Quicksand",14,X/2,Y/2+60)
         des2 = text("Your review will help Hilbert Hostel imporves accomodation and tell those interested in what you'll find.","Quicksand",14,X/2,Y/2+80)
         des3 = text("Hilbert Hostel won't see your suggestion until you review you as well.","Quicksand",14,X/2,Y/2+120)
@@ -483,3 +500,4 @@ def check_out_success_page():
 kiosk_menu_page()
 
 pygame.quit()  # If we exit the loop this will execute and close our game
+send_log("Kiosk is shut down","close")

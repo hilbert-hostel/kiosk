@@ -27,14 +27,14 @@ grey = (224,224,224)
 dgrey = (200,200,200)
 black = (0,0,0)
 X = 800
-Y = 460
+Y = 480
 
 clock = pygame.time.Clock()
 
 pygame.init()
 screen = pygame.display.set_mode((X,Y))
 pygame.display.set_caption("Hilbert")
-pygame.display.toggle_fullscreen()
+#pygame.display.toggle_fullscreen()
 
 #------------Components--------------------
 
@@ -93,15 +93,15 @@ def rating_bar(rate):
     btn = [Button("",50,50,white,white,5) for i in range(5)]
     
     for i in range(5):
-        btn[i].place(X/3-20+70*i,Y/3+10)
+        btn[i].place(X/3-20+70*i,Y/3+20)
             
     for i in range(5):
         if i < rate["r"] :
-            picture("star2c.jpg",X/3+5+70*i,Y/3+35,255)
+            picture("star2c.jpg",X/3+5+70*i,Y/3+45,255)
         else:
-            picture("star2.jpg",X/3+5+70*i,Y/3+35,255)
+            picture("star2.jpg",X/3+5+70*i,Y/3+45,255)
         
-        text(rt[i],"Quicksand",12,X/3+5+70*i,Y/3+70)
+        text(rt[i],"Quicksand",12,X/3+5+70*i,Y/3+80)
     
     for i in range(5) :
         if(btn[i].is_clicked()):
@@ -269,6 +269,8 @@ def book_detail_page():
 def enter_OTP_page():
     run = True
     otp = []
+    pos = 0
+    refn = ["6031848721","6031851521"]
     while run:
 
         for event in pygame.event.get():  # This will loop through a list of any keyboard or mouse events.
@@ -281,13 +283,13 @@ def enter_OTP_page():
         title = text("Enter your OTP","Quicksand",30,125,40)
         ref = text("OTP ref no. ","Quicksand",25,95,Y/3+5)
        
-        refNum = text("6031848721","Quicksand",25,X/4+40,Y/3+5)
+        refNum = text(refn[pos],"Quicksand",25,X/4+40,Y/3+5)
         tom = picture('tomnews.jpg',X-150,Y/4,128)
         info = text("Name: Phumarin Nuntavatana","Quicksand",15,X-150,Y/2)
         info2 = text("Booking ID: X69X420X69X","Quicksand",15,X-150,Y/2+30)
         info3 = room_type = text("Room type: King Size , 5 beds","Quicksand",15,X-150,Y*2/3+70)
-        submitBtn = Button("Submit",100,50,orange,lightorange,20,white)
-
+        submitBtn = Button("Submit",100,50,orange,lightorange,18,white)
+        reqOTPBtn = Button("Request OTP",140,50,orange,lightorange,18,white)
         for i in range(6):
             pygame.draw.rect(screen,grey,(50+slide,Y/4-40,50,50))
             slide += 70
@@ -297,14 +299,18 @@ def enter_OTP_page():
             text(str(num),"Quicksand",25,75+slide,Y/4-10)
             slide += 70
 
-        submitBtn.place(X/2-50,Y-80)
+        submitBtn.place(X/2-60,Y-80)
+        reqOTPBtn.place(X/2-60,Y-150)
         np = numpad(otp)
     
         if(submitBtn.is_clicked()):
             take_pic_page()
             otp.clear()
             run = False
-        
+        if(reqOTPBtn.is_clicked()):
+            sleep(0.1)
+            pos = 1
+            
         pygame.display.update() 
         clock.tick(30)
 
@@ -405,9 +411,9 @@ def check_out_confirm_page():
         
         screen.fill(white)
         hb = text("Hilbert Hostel","Quicksand Medium",40,X/2,70,orange)
-        r = pygame.draw.rect(screen,black,(X/2-200,Y/2-105,400,210))
-        r2 = pygame.draw.rect(screen,white,(X/2-200,Y/2-104,400,210))
-        title = text("Confirmed checkout?","Quicksand",20,X/2,Y/2-10)
+        r = pygame.draw.rect(screen,dgrey,(X/2-200,Y/2-125,400,210))
+        r2 = pygame.draw.rect(screen,white,(X/2-200,Y/2-124,400,210))
+        title = text("Confirmed checkout?","Quicksand",20,X/2,Y/2-25)
         cfm = Button("Confirm",150,50,orange,lightorange,20,white)
         cancel = Button("Cancel",150,50,orange,lightorange,20,white)
 
@@ -436,7 +442,7 @@ def check_out_success_page():
         screen.fill(white)
         homeBtn = Button("Home",150,50,orange,lightorange,20,white)
         hb = text("Hilbert Hostel","Quicksand Medium",40,X/2,70,orange)
-        hb2 = text("How was Hilbert Hostel experience?","Quicksand",30,X/2,110)
+        hb2 = text("How was Hilbert Hostel experience?","Quicksand",30,X/2,120)
         des = text("Share your experience while memories are fresh.","Quicksand",14,X/2,Y/2+60)
         des2 = text("Your review will help Hilbert Hostel imporves accomodation and tell those interested in what you'll find.","Quicksand",14,X/2,Y/2+80)
         des3 = text("Hilbert Hostel won't see your suggestion until you review you as well.","Quicksand",14,X/2,Y/2+120)
