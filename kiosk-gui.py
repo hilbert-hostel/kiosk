@@ -93,9 +93,9 @@ def rating_bar(rate):
             
     for i in range(5):
         if i < rate["r"] :
-            picture("star2c.jpg",X/3+5+70*i,Y/3+45,255)
+            picture("pic/star2c.jpg",X/3+5+70*i,Y/3+45,255)
         else:
-            picture("star2.jpg",X/3+5+70*i,Y/3+45,255)
+            picture("pic/star2.jpg",X/3+5+70*i,Y/3+45,255)
         
         text(rt[i],"Quicksand",12,X/3+5+70*i,Y/3+80)
     
@@ -155,19 +155,19 @@ def kiosk_menu_page():
     
         screen.fill(white)
         
-        doge = picture('doge2.jpg',X/4+40,Y/2,alpha)
-        if(alpha<128):
-            alpha += 3
+        doge = picture('pic/menu.jpg',X/4+40,Y/2,alpha)
+        if(alpha<60):
+            alpha += 2
         
         title = text("Welcome to Hilbert Hostel","Quicksand",40,boundary,60)
         if(boundary<X/3):
             boundary += 9
         
         ckoutBtn = Button("Check-out",150,60,orange,lightorange,15,white)
-        ckoutBtn.place(80,Y-100)
+        ckoutBtn.place(65,Y-100)
         bclose = Button("",40,40,white,white,20)
-        bclose.place(X*3/4+100,Y/4-70)
-        cross = picture('cross.jpg',X*3/4+120,Y/4-50,255)
+        bclose.place(X*3/4+120,Y/4-90)
+        cross = picture('pic/cross.jpg',X*3/4+140,Y/4-70,255)
 
         if bclose.is_clicked() :
             run = False
@@ -227,21 +227,21 @@ def book_detail_page():
             if len(resv_info["rooms"])>1 :
                 if pointer==0 :    
                     nxtrmBtn.place(X/2+50,Y/2+50)
-                    picture("arrowr.jpg",X/2+80,Y/2+80,190)
+                    picture("pic/arrowr.jpg",X/2+80,Y/2+80,190)
                     if(nxtrmBtn.is_clicked()):
                         pointer += 1
                 elif pointer == len(resv_info["rooms"])-1 :
                     pvsrmBtn.place(X/6-80,Y/2+50)
-                    picture("arrowl.jpg",X/6-50,Y/2+80,190)
+                    picture("pic/arrowl.jpg",X/6-50,Y/2+80,190)
                     if(pvsrmBtn.is_clicked()):
                         pointer -= 1                        
                 else:
                     nxtrmBtn.place(X/2+50,Y/2+50)
-                    picture("arrowr.jpg",X/2+80,Y/2+80,190)
+                    picture("pic/arrowr.jpg",X/2+80,Y/2+80,190)
                     if(nxtrmBtn.is_clicked()):
                         pointer += 1                        
                     pvsrmBtn.place(X/6-80,Y/2+50)
-                    picture("arrowl.jpg",X/6-50,Y/2+80,190)
+                    picture("pic/arrowl.jpg",X/6-50,Y/2+80,190)
                     if(pvsrmBtn.is_clicked()):
                         pointer -= 1                         
 
@@ -300,7 +300,6 @@ def enter_OTP_page():
             reqOTPBtn.place(X/2-60,Y-150)
             
             if(submitBtn.is_clicked()):
-                sleep(0.1)
                 if verify_OTP(resv_info,otp,token) :
                     take_pic_page()
                     otp.clear()
@@ -495,4 +494,4 @@ def check_out_success_page():
 kiosk_menu_page()
 
 pygame.quit()  # If we exit the loop this will execute and close our game
-send_log("Kiosk is shut down","close")
+# send_log("Kiosk is shut down","close")

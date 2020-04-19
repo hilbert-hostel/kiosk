@@ -5,6 +5,7 @@ import datetime
 import imutils
 import time
 import cv2
+import os
 import time
 
 def read_qr(co):
@@ -58,5 +59,6 @@ def read_qr(co):
     csv.close()
     cv2.destroyAllWindows()
     vs.stop()
+    os.remove("barcodes.csv")
 
 #read_qr()

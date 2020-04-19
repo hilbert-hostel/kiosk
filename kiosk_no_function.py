@@ -95,9 +95,9 @@ def rating_bar(rate):
             
     for i in range(5):
         if i < rate["r"] :
-            picture("star2c.jpg",X/3+5+70*i,Y/3+45,255)
+            picture("pic/star2c.jpg",X/3+5+70*i,Y/3+45,255)
         else:
-            picture("star2.jpg",X/3+5+70*i,Y/3+45,255)
+            picture("pic/star2.jpg",X/3+5+70*i,Y/3+45,255)
         
         text(rt[i],"Quicksand",12,X/3+5+70*i,Y/3+80)
     
@@ -157,7 +157,7 @@ def kiosk_menu_page():
     
         screen.fill(white)
         
-        doge = picture('doge2.jpg',X/4+40,Y/2,alpha)
+        doge = picture('pic/doge2.jpg',X/4+40,Y/2,alpha)
         if(alpha<128):
             alpha += 3
         
@@ -167,10 +167,10 @@ def kiosk_menu_page():
         
         insert = text("Insert ID card to check-in","Quicksand",20,X-150,Y*3/4)
         ckoutBtn = Button("Check-out",150,60,orange,lightorange,15,white)
-        ckoutBtn.place(80,Y-100)
+        ckoutBtn.place(65,Y-100)
         bclose = Button("",40,40,white,white,20)
-        bclose.place(X*3/4+100,Y/4-70)
-        cross = picture('cross.jpg',X*3/4+120,Y/4-50,255)
+        bclose.place(X*3/4+120,Y/4-90)
+        cross = picture('pic/cross.jpg',X*3/4+140,Y/4-70,255)
 
         if bclose.is_clicked() :
             run = False
@@ -197,15 +197,15 @@ def book_detail_page():
     room = [{
         "name":"King Size" ,
         "beds":"5" ,
-        "pic":"tomnews.jpg"
+        "pic":"pic/tomnews.jpg"
     },{
         "name":"Queen Size" ,
         "beds":"10"  ,
-        "pic":"jerry.jpg"  
+        "pic":"pic/jerry.jpg"  
     },{
         "name":"Yee Size" ,
         "beds":"15"  ,
-        "pic":"tomnews.jpg"  
+        "pic":"pic/tomnews.jpg"  
     }]
     pointer = 0
     while run:
@@ -232,21 +232,21 @@ def book_detail_page():
         if len(room) > 1 :
             if(pointer==0):    
                 nxtrmBtn.place(X/2+50,Y/2+50)
-                picture("arrowr.jpg",X/2+80,Y/2+80,190)
+                picture("pic/arrowr.jpg",X/2+80,Y/2+80,190)
                 if(nxtrmBtn.is_clicked()):
                     pointer += 1                    
             elif pointer == len(room)-1 :
                 pvsrmBtn.place(X/6-80,Y/2+50)
-                picture("arrowl.jpg",X/6-50,Y/2+80,190)
+                picture("pic/arrowl.jpg",X/6-50,Y/2+80,190)
                 if(pvsrmBtn.is_clicked()):
                     pointer -= 1                    
             else:
                 nxtrmBtn.place(X/2+50,Y/2+50)
-                picture("arrowr.jpg",X/2+80,Y/2+80,190)
+                picture("pic/arrowr.jpg",X/2+80,Y/2+80,190)
                 if(nxtrmBtn.is_clicked()):
                     pointer += 1
                 pvsrmBtn.place(X/6-80,Y/2+50)
-                picture("arrowl.jpg",X/6-50,Y/2+80,190)
+                picture("pic/arrowl.jpg",X/6-50,Y/2+80,190)
                 if(pvsrmBtn.is_clicked()):
                     pointer -= 1         
         
@@ -277,7 +277,7 @@ def enter_OTP_page():
         ref = text("OTP ref no. ","Quicksand",25,95,Y/3+5)
        
         refNum = text(refn[pos],"Quicksand",25,X/4+40,Y/3+5)
-        tom = picture('tomnews.jpg',X-150,Y/4,128)
+        tom = picture('pic/tomnews.jpg',X-150,Y/4,128)
         info = text("Name: Phumarin Nuntavatana","Quicksand",15,X-150,Y/2)
         info2 = text("Booking ID: X69X420X69X","Quicksand",15,X-150,Y/2+30)
         info3 = room_type = text("Room type: King Size , 5 beds","Quicksand",15,X-150,Y*2/3+70)
@@ -329,9 +329,9 @@ def take_pic_page():
         if(aclick!=0):
             smileBtn.msg = "Retake"
             if aclick == 1 :
-                proc = picture('yajuu.jpg',X/2,Y/2,255)
+                proc = picture('pic/yajuu.jpg',X/2,Y/2,255)
             else:
-                proc = picture('jerry.jpg',X/2,Y/2,255)
+                proc = picture('pic/jerry.jpg',X/2,Y/2,255)
             finishBtn = Button("Finish",120,50,orange,lightorange,20,white)
             finishBtn.place(X*4/5-120,Y-100)
 

@@ -25,7 +25,8 @@ def gather_info(cr,resv_info):
         resize_pic("room_image.jpg",350,"resized_room")
         resize_pic("room_image.jpg",250,"resized_room2")
     elif ret.status_code == 500:
-        send_log("Getting booking info failed with code status 500")
+        print("Getting booking info failed with code status 500")
+        # send_log("Getting booking info failed with code status 500")
 
 def request_OTP(resv_info,refn):
     host = (h+"/generate-otp/{}").format(resv_info["id"])
@@ -37,7 +38,8 @@ def request_OTP(resv_info,refn):
             refn[i] = temp[i]
     
     elif ret.status_code == 500:
-        send_log("Requesting OTP failed with code status 500")
+        print("Requesting OTP failed with code status 500")
+        # send_log("Requesting OTP failed with code status 500")
     
     
     
@@ -57,10 +59,12 @@ def verify_OTP(resv_info,otp,token):
             return True
     
     elif ret.status_code == 400:
-        send_log("User puts incorrect OTP")
+        print("User puts incorrect OTP")
+        # send_log("User puts incorrect OTP")
     
     elif ret.status_code == 500:
-        send_log("Verifying OTP failed with code status 500")
+        print("OTP verification failed with code status 500")
+        # send_log("Verifying OTP failed with code status 500")
     
     return False
     
@@ -86,7 +90,7 @@ def check_out(resv_info):
     if ret.status_code == 200:
         return True
     elif ret.status_code == 500:
-        print("lol")
+        print("Check-out failed with code status 500")
         #send_log("Check-out failed with code status 500")
     return False
 
