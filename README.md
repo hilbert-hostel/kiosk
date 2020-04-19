@@ -1,3 +1,3 @@
 # Hilbert Kiosk
 To test the UI, please run: 
-### ' kiosk_no_function.py'
+### 'python3 kiosk_no_function.py'
