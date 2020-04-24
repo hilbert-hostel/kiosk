@@ -1,10 +1,14 @@
+from dotenv import load_dotenv
+load_dotenv()
+
+import os
 import requests
 import datetime as dt
 from tools import *
 
-h = "https://hilbert.himkwtn.me/checkIn"
-h2 = "https://hilbert.himkwtn.me/checkOut"
-h3 = "https://search-hilbert-huc7fjahm5ghi5gqmzhpfbhb6y.ap-southeast-1.es.amazonaws.com/hilbert/_doc"
+h = os.getenv('CHECKIN')
+h2 = os.getenv('CHECKOUT')
+h3 = os.getenv('LOG')
 
 def gather_info(cr,resv_info):
     cr.read_card()
@@ -40,8 +44,6 @@ def request_OTP(resv_info,refn):
     elif ret.status_code == 500:
         print("Requesting OTP failed with code status 500")
         # send_log("Requesting OTP failed with code status 500")
-    
-    
     
 def verify_OTP(resv_info,otp,token):
     host = h+"/verify-otp/{}".format(resv_info["id"])
