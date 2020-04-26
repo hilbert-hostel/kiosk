@@ -254,7 +254,7 @@ def book_detail_page():
         if(OTPBtn.is_clicked()):
             enter_OTP_page()
             pointer = 0
-            run = False
+            return
         
         pygame.display.update() 
         clock.tick(30)

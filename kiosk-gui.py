@@ -27,13 +27,14 @@ cr = cardreader()
 resv_info = {}
 refn = {}
 token = {}
+co = {}
 
 pygame.init()
 screen = pygame.display.set_mode((X,Y))
 pygame.display.set_caption("Hilbert")
 #pygame.display.toggle_fullscreen()
 
-#send_log("Kiosk is started","init")
+send_log("Kiosk is started la","init")
 #------------Components--------------------
 
 def text_objects(text, font, color):
@@ -223,52 +224,61 @@ def book_detail_page():
         screen.fill(white)   
         title = text("Here is your booking detail","Quicksand",30,(X/4),50)
         
-        if(len(resv_info) != 0 and len(cr.card_data) != 0 and os.path.exists("resized_room.jpg")):
-            if len(resv_info["rooms"])>1 :
-                if pointer==0 :    
-                    nxtrmBtn.place(X/2+50,Y/2+50)
-                    picture("pic/arrowr.jpg",X/2+80,Y/2+80,190)
-                    if(nxtrmBtn.is_clicked()):
-                        pointer += 1
-                elif pointer == len(resv_info["rooms"])-1 :
-                    pvsrmBtn.place(X/6-80,Y/2+50)
-                    picture("pic/arrowl.jpg",X/6-50,Y/2+80,190)
-                    if(pvsrmBtn.is_clicked()):
-                        pointer -= 1                        
-                else:
-                    nxtrmBtn.place(X/2+50,Y/2+50)
-                    picture("pic/arrowr.jpg",X/2+80,Y/2+80,190)
-                    if(nxtrmBtn.is_clicked()):
-                        pointer += 1                        
-                    pvsrmBtn.place(X/6-80,Y/2+50)
-                    picture("pic/arrowl.jpg",X/6-50,Y/2+80,190)
-                    if(pvsrmBtn.is_clicked()):
-                        pointer -= 1                         
+        if(len(resv_info) != 0 and len(cr.card_data) != 0 ) :
+            if resv_info["status"] == 200 and os.path.exists("resized_room.jpg") :
+                if len(resv_info["rooms"])>1 :
+                    if pointer==0 :    
+                        nxtrmBtn.place(X/2+40,Y/2+50)
+                        picture("pic/arrowr.jpg",X/2+70,Y/2+80,190)
+                        if(nxtrmBtn.is_clicked()):
+                            pointer += 1
+                    elif pointer == len(resv_info["rooms"])-1 :
+                        pvsrmBtn.place(X/6-110,Y/2+50)
+                        picture("pic/arrowl.jpg",X/6-80,Y/2+80,190)
+                        if(pvsrmBtn.is_clicked()):
+                            pointer -= 1                        
+                    else:
+                        nxtrmBtn.place(X/2+40,Y/2+50)
+                        picture("pic/arrowr.jpg",X/2+70,Y/2+80,190)
+                        if(nxtrmBtn.is_clicked()):
+                            pointer += 1                        
+                        pvsrmBtn.place(X/6-110,Y/2+50)
+                        picture("pic/arrowl.jpg",X/6-80,Y/2+80,190)
+                        if(pvsrmBtn.is_clicked()):
+                            pointer -= 1                         
 
-            rif = resv_info["rooms"][pointer]["type"].capitalize()
-            nor = resv_info["rooms"][pointer]["beds"]
-            dur = "{} to {}".format(resv_info['checkIn'][:10],resv_info['checkOut'][:10])
-            
-            add_on = text("Special request","Quicksand",30,X-150,Y/3-50)
-            tom = picture('resized_room.jpg',X/3,Y/2-50,128)
-            name = text("Name: "+cr.card_data['nameEN'],"Quicksand",15,X/4+50,Y*2/3)
-            bk_id = text("Booking ID: "+resv_info['id'],"Quicksand",15,X/4+50,Y*2/3+30)
-            room_type = text("Room type: {} , {} bed".format(rif,nor),"Quicksand",15,X/4+50,Y*2/3+70)
-            room_dur = text(("Duration: "+dur),"Quicksand",15,X/4+50,Y*2/3+100)
-            special_req = text(resv_info['specialRequests'],"Quicksand",15,X-150,Y/3)
-            note = text("You can take you card back now","Quicksand Medium",15,X-150,Y-150)
-            OTPBtn.place(X-220,Y-80)
-            if(OTPBtn.is_clicked()):
-                t = Thread(target=request_OTP,args=(resv_info,refn))
-                t.start()
-                enter_OTP_page()
-                pointer = 0
-                cr.card_data.clear()
+                rif = resv_info["rooms"][pointer]["type"].capitalize()
+                nor = resv_info["rooms"][pointer]["beds"]
+                dur = "{} to {}".format(resv_info['checkIn'][:10],resv_info['checkOut'][:10])
+                
+                OTPBtn.place(X-220,Y-80)
+                if(OTPBtn.is_clicked()):
+                    t = Thread(target=request_OTP,args=(resv_info,refn))
+                    t.start()
+                    enter_OTP_page()
+                    pointer = 0
+                    cr.card_data.clear()
+                    resv_info.clear()
+                    os.remove("room_image.jpg")
+                    os.remove("resized_room.jpg")
+                    os.remove("resized_room2.jpg")
+                    os.remove("card_image.jpg")
+                    return
+                r = pygame.draw.rect(screen,dgrey,(X*3/4-90,Y/4-20,50,300))
+                r2 = pygame.draw.rect(screen,white,(X*3/4-89,Y/4-20,50,300))
+                add_on = text("Special request","Quicksand",30,X-150,Y/3-50)
+                tom = picture('resized_room.jpg',X/3,Y/2-50,128)
+                name = text("Name: "+cr.card_data['nameEN'],"Quicksand",15,X/4+50,Y*2/3)
+                bk_id = text("Booking ID: "+resv_info['id'],"Quicksand",15,X/4+50,Y*2/3+30)
+                room_type = text("Room type: {} , {} bed".format(rif,nor),"Quicksand",15,X/4+50,Y*2/3+70)
+                room_dur = text(("Duration: "+dur),"Quicksand",15,X/4+50,Y*2/3+100)
+                special_req = text(resv_info['specialRequests'],"Quicksand",15,X-150,Y/3)
+                note = text("You can take you card back now","Quicksand Medium",15,X-150,Y-150)
+                    
+            else :
+                error_page()
                 resv_info.clear()
-                os.remove("room_image.jpg")
-                os.remove("resized_room.jpg")
-                os.remove("resized_room2.jpg")
-                os.remove("card_image.jpg")
+                cr.card_data.clear()
                 run = False
         else :
             pls = text("Please wait","Quicksand",45,X/2,Y/2)
@@ -404,7 +414,6 @@ def check_in_complete_page():
 
 def check_out_page():
     run = True
-    co = {}
     while run:
 
         for event in pygame.event.get():  # This will loop through a list of any keyboard or mouse events.
@@ -414,18 +423,17 @@ def check_out_page():
         screen.fill(white)
         hb = text("Hilbert Hostel","Quicksand Medium",40,X/2,70,orange)
         title = text("Please scan QR Code to check-out","Quicksand",20,X/2,Y/4)
-        yee = Button("Finish",120,50,blue,lightblue,20,white)
+        cam = Button("Camera",120,50,orange,lightorange,20,white)
         back = Button("Back",150,50,orange,lightorange,20,white)
         back.place(X*3/4,Y*3/4)
         if back.is_clicked() :
             run = False
         
         if len(co) != 0 :
-            if check_out(co["data"]) :
-                run = check_out_confirm_page()
+            run = check_out_confirm_page()
             co.clear()
-        yee.place(X/2-60,Y/2+50)
-        if yee.is_clicked() :
+        cam.place(X/2-60,Y/2+50)
+        if cam.is_clicked() :
             td = Thread(target=read_qr,args=(co,))
             td.start()
         
@@ -450,8 +458,12 @@ def check_out_confirm_page():
 
         cfm.place(X/2-170,Y/2+20)
         if cfm.is_clicked() :
-            check_out_success_page()
+            if check_out(co["data"]) :
+                check_out_success_page()
+            else:
+                error_page()
             return False
+        
         cancel.place(X/2+20,Y/2+20)
         if cancel.is_clicked() :
             return True
@@ -491,7 +503,25 @@ def check_out_success_page():
         pygame.display.update() 
         clock.tick(30)
 
+def error_page():
+    run = True
+    while run:
+
+        for event in pygame.event.get():  # This will loop through a list of any keyboard or mouse events.
+            if event.type == pygame.QUIT:  # Checks if the red button in the corner of the window is clicked
+                run = False  # Ends the game loop
+        
+        screen.fill(white)
+        text("There is an error in the system","Quicksand",30,X/2,Y/2)
+        backBtn = Button("Back",150,50,orange,lightorange,20,white)
+        backBtn.place(X/2-75,Y*3/4)
+        if backBtn.is_clicked() :
+            run = False
+            
+        pygame.display.update() 
+        clock.tick(30)
+
 kiosk_menu_page()
 
 pygame.quit()  # If we exit the loop this will execute and close our game
-# send_log("Kiosk is shut down","close")
+send_log("Kiosk is shutting down la","close")

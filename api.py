@@ -15,12 +15,13 @@ def gather_info(cr,resv_info):
     nw = dt.datetime.now()
     #nw = nw.isoformat()
     nw = nw.strftime("%Y-%m-%d")
-    nw = "2020-04-17"
+    #nw = "2020-04-26"
     host = h
     params = {"nationalID":cr.card_data["nationalID"],"date":nw}
     ret = requests.get(host,params)
     print("get_resv:")
     print(ret)
+    resv_info["status"] = ret.status_code
     if ret.status_code == 200:
         temp = dict(ret.json())
         for i in temp:
@@ -53,6 +54,7 @@ def verify_OTP(resv_info,otp,token):
     body = {'otp':notp}
     ret = requests.post(host,json = body)
     print(ret)
+    token['status'] = ret.status_code
     
     if ret.status_code == 200:
         temp = dict(ret.json())
@@ -99,8 +101,10 @@ def check_out(resv_info):
 def send_log(message,level="error"):
     nw = dt.datetime.now()
     ts = int(dt.datetime.timestamp(nw))
+    iso = nw.isoformat()
     host = h3
-    log = {"from":"kiosk","body":message,"level":level,"timestamp":ts}
+    log = {"from":"kiosk","body":message,"level":level,"time":iso+"Z","timestamp":ts}
     ret2 = requests.post(host,json=log)
     print("log: "+message)
     print(ret2)
+    print(log)
