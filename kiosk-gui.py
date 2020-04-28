@@ -34,7 +34,7 @@ screen = pygame.display.set_mode((X,Y))
 pygame.display.set_caption("Hilbert")
 #pygame.display.toggle_fullscreen()
 
-send_log("Kiosk is started la","init")
+send_log("Kiosk is starting","init")
 #------------Components--------------------
 
 def text_objects(text, font, color):
@@ -136,7 +136,7 @@ class Button(object):
 
         if(self.x+self.w > mouse[0] > self.x and self.y+self.h > mouse[1] > self.y):
             if(clicked[0] == 1):
-                sleep(0.1)
+                sleep(0.3)
                 return True
         
         return False
@@ -225,7 +225,7 @@ def book_detail_page():
         title = text("Here is your booking detail","Quicksand",30,(X/4),50)
         
         if(len(resv_info) != 0 and len(cr.card_data) != 0 ) :
-            if resv_info["status"] == 200 and os.path.exists("resized_room.jpg") :
+            if resv_info["status"] == 200 :
                 if len(resv_info["rooms"])>1 :
                     if pointer==0 :    
                         nxtrmBtn.place(X/2+40,Y/2+50)
@@ -267,7 +267,8 @@ def book_detail_page():
                 r = pygame.draw.rect(screen,dgrey,(X*3/4-90,Y/4-20,50,300))
                 r2 = pygame.draw.rect(screen,white,(X*3/4-89,Y/4-20,50,300))
                 add_on = text("Special request","Quicksand",30,X-150,Y/3-50)
-                tom = picture('resized_room.jpg',X/3,Y/2-50,128)
+                if os.path.exists("resized_room.jpg") :
+                    tom = picture('resized_room.jpg',X/3,Y/2-50,128)
                 name = text("Name: "+cr.card_data['nameEN'],"Quicksand",15,X/4+50,Y*2/3)
                 bk_id = text("Booking ID: "+resv_info['id'],"Quicksand",15,X/4+50,Y*2/3+30)
                 room_type = text("Room type: {} , {} bed".format(rif,nor),"Quicksand",15,X/4+50,Y*2/3+70)
@@ -496,6 +497,8 @@ def check_out_success_page():
 
         homeBtn.place(X*3/4,Y-90)
         if homeBtn.is_clicked():
+            td = Thread(target=send_rate,args=(rate,co))
+            td.start()
             thanks = 0
             rate["r"] = 0
             run = False

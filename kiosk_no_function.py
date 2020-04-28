@@ -3,9 +3,8 @@ This version of kiosk has no API or card reader
 Used for editing UI easily
 Feel free to play
 
-Note: This GUI is made for Raspberry Pi 4
-So the font might be shitty but it's still be able to play in any device la
-Or you could replace "Quicksand" to any font you would like
+Note: This GUI is made for Raspberry Pi 4, so the fontmight not be compatable 
+You could replace "Quicksand" to any font you would like
 '''
 
 import pygame
@@ -34,7 +33,7 @@ clock = pygame.time.Clock()
 pygame.init()
 screen = pygame.display.set_mode((X,Y))
 pygame.display.set_caption("Hilbert")
-#pygame.display.toggle_fullscreen()
+pygame.display.toggle_fullscreen()
 
 #------------Components--------------------
 
@@ -137,7 +136,7 @@ class Button(object):
 
         if(self.x+self.w > mouse[0] > self.x and self.y+self.h > mouse[1] > self.y):
             if(clicked[0] == 1):
-                sleep(0.1)
+                sleep(0.3)
                 return True
         
         return False

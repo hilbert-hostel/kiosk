@@ -98,6 +98,13 @@ def check_out(resv_info):
         #send_log("Check-out failed with code status 500")
     return False
 
+def send_rate(rate,co):
+    payload = {"reservationID":co["data"],
+               "rating":rate["r"]}
+    host = h2+"/rate"
+    ret = requests.post(host,json=payload)
+    print(ret)
+
 def send_log(message,level="error"):
     nw = dt.datetime.now()
     ts = int(dt.datetime.timestamp(nw))
